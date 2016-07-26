@@ -3,9 +3,12 @@ package com.htc.nick.Base;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
+
+import org.androidannotations.annotations.App;
 
 
 /**
@@ -28,7 +31,7 @@ public abstract class BaseActivity<V, T extends BasePresenter> extends AppCompat
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-           // window.setStatusBarColor(ContextCompat.getColor(this, Androd.));
+//            window.setStatusBarColor(ContextCompat.getColor(this, Androd.));
         }
     }
 
