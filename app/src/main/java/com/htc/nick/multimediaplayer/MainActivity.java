@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private String mTitles[] = {"Audio","Video","Photo"};
     private int mImages[] = {
             R.mipmap.headset,
-            R.mipmap.headset,
-            R.mipmap.headset,
+            R.mipmap.video,
+            R.mipmap.photo,
     };
 
 
@@ -50,11 +50,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         init();
     }
 
-//    @Override
-//    protected MainPresenter createPresenter() {
-//        return MainPresenter_.getInstance_(this);
-//    }
-
     private void init() {
 
         initView();
@@ -66,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
 
-        mFragmentList = new ArrayList<Fragment>();
+        mFragmentList = new ArrayList<>();
 
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
         mTabHost.getTabWidget().setDividerDrawable(null);
@@ -75,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
             TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mTitles[i]).setIndicator(getTabView(i));
             mTabHost.addTab(tabSpec,mClass[i],null);
             mFragmentList.add(mFragment[i]);
-            mTabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.WHITE);
+            mTabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#B5ADB6"));
         }
 
         mViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
