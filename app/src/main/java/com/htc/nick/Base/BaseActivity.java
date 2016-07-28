@@ -28,7 +28,7 @@ public abstract class BaseActivity<V, T extends BasePresenter> extends AppCompat
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-           // window.setStatusBarColor(ContextCompat.getColor(this, Androd.));
+//            window.setStatusBarColor(ContextCompat.getColor(this, Androd.));
         }
     }
 
