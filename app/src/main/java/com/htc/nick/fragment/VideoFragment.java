@@ -7,10 +7,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 
+import com.htc.nick.Adapter.VideoGridViewAdapter;
+import com.htc.nick.media.VideoManager;
 import com.htc.nick.multimediaplayer.R;
-
-import org.androidannotations.annotations.EFragment;
 
 /**
  * Created by nick_chung on 2016/7/26.
@@ -19,6 +20,14 @@ import org.androidannotations.annotations.EFragment;
 
 public class VideoFragment extends Fragment {
     private View mRootView;
+    private VideoManager videoManager;
+    private VideoGridViewAdapter gridViewAdapter;
+    private GridView gridView;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        videoManager = new VideoManager(getContext());
+    }
 
     @Nullable
     @Override
@@ -26,11 +35,19 @@ public class VideoFragment extends Fragment {
         if (mRootView == null){
             Log.e("Fragment","VideoFragment");
             mRootView = inflater.inflate(R.layout.fragment_video,container,false);
+            gridView = (GridView) mRootView.findViewById(R.id.videoGridView);
+            gridViewAdapter = new VideoGridViewAdapter(getContext(), R.layout.grid_item, videoManager.getVideoList());
+            gridView.setAdapter(gridViewAdapter);
         }
         ViewGroup parent = (ViewGroup) mRootView.getParent();
         if (parent != null){
             parent.removeView(mRootView);
         }
         return mRootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }
