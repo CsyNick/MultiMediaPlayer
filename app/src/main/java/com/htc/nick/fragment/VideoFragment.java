@@ -1,15 +1,21 @@
 package com.htc.nick.fragment;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
+import com.htc.nick.Adapter.PhotoGridViewAdapter;
 import com.htc.nick.Adapter.VideoGridViewAdapter;
+import com.htc.nick.Base.Constants;
 import com.htc.nick.media.VideoManager;
 import com.htc.nick.multimediaplayer.R;
 
@@ -36,8 +42,7 @@ public class VideoFragment extends Fragment {
             Log.e("Fragment","VideoFragment");
             mRootView = inflater.inflate(R.layout.fragment_video,container,false);
             gridView = (GridView) mRootView.findViewById(R.id.videoGridView);
-            gridViewAdapter = new VideoGridViewAdapter(getContext(), R.layout.grid_item, videoManager.getVideoList());
-            gridView.setAdapter(gridViewAdapter);
+
         }
         ViewGroup parent = (ViewGroup) mRootView.getParent();
         if (parent != null){
@@ -49,5 +54,15 @@ public class VideoFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        int permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
+        } else {
+            gridViewAdapter = new VideoGridViewAdapter(getContext(), R.layout.grid_item, videoManager.getVideoList());
+            gridView.setAdapter(gridViewAdapter);
+        }
+
     }
 }

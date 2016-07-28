@@ -41,7 +41,7 @@ public class PhotoManager {
                 BitmapFactory.Options options=new BitmapFactory.Options();
                 options.inDither = false;
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                photos[i] =  MediaStore.Images.Thumbnails.getThumbnail(cr, photoId, MediaStore.Images.Thumbnails.MINI_KIND, options);
+                photos[i] =  MediaStore.Images.Thumbnails.getThumbnail(cr, photoId, MediaStore.Images.Thumbnails.MICRO_KIND, options);
                 photoList.add(photos[i]);
                 i++;
 

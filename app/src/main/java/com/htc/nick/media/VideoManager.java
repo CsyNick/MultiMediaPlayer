@@ -45,7 +45,7 @@ public class VideoManager {
                 options.inDither = false;
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-                thumbnails[i] = MediaStore.Video.Thumbnails.getThumbnail(cr, videoId, MediaStore.Video.Thumbnails.MINI_KIND, options);
+                thumbnails[i] = MediaStore.Video.Thumbnails.getThumbnail(cr, videoId, MediaStore.Video.Thumbnails.MICRO_KIND, options);
                 videoItem = new VideoItem(videos[i],videoPath[i],thumbnails[i]);
                 videoList.add(videoItem);
                 i++;
