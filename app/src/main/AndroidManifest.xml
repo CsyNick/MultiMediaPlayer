@@ -23,6 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="com.htc.nick.Page.MusicPlayer.MusicPlayerActivity_"
+            android:label="MusicPlayer"
+            android:theme="@style/AppTheme" >
+
+        </activity>
     </application>
 
 
