@@ -42,6 +42,15 @@ public class VideoFragment extends Fragment {
             Log.e("Fragment","VideoFragment");
             mRootView = inflater.inflate(R.layout.fragment_video,container,false);
             gridView = (GridView) mRootView.findViewById(R.id.videoGridView);
+            int permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                        getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
+            } else {
+                gridViewAdapter = new VideoGridViewAdapter(getContext(), R.layout.grid_item, videoManager.getVideoList());
+                gridView.setAdapter(gridViewAdapter);
+            }
 
         }
         ViewGroup parent = (ViewGroup) mRootView.getParent();
@@ -54,15 +63,6 @@ public class VideoFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        int permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
-        } else {
-            gridViewAdapter = new VideoGridViewAdapter(getContext(), R.layout.grid_item, videoManager.getVideoList());
-            gridView.setAdapter(gridViewAdapter);
-        }
 
     }
 }

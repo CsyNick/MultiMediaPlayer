@@ -97,16 +97,13 @@ public class AudioFragment extends Fragment {
                 android.R.layout.simple_list_item_1, songsListData);
         audioListView.setAdapter(mAdapter);
 
-//        for (int i = 0; i < mMusicList.length; i++) {
-//            Log.d("AudioFragment", mMusicList[i].toString());
-//        }
-//        audioListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                int songIndex = position;
-//                playMusic(songsListPath.get(songIndex));
-//            }
-//        });
+        audioListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int songIndex = position;
+                playMusic(songsListPath.get(songIndex));
+            }
+        });
     }
 
 
