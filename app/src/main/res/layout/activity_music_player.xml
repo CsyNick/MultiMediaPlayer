@@ -130,7 +130,7 @@
         android:gravity="center">
         <!-- Repeat Button -->
         <ImageButton
-            android:id="@+id/btnRepeat"
+            android:id="@+id/repeat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/btn_repeat"
@@ -139,7 +139,7 @@
 
         <!-- Shuffle Button -->
         <ImageButton
-            android:id="@+id/btnShuffle"
+            android:id="@+id/shuffle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/btn_shuffle"

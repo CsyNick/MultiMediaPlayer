@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.htc.nick.Base.BaseActivity;
 import com.htc.nick.media.SongManager;
@@ -25,6 +26,7 @@ import org.androidannotations.annotations.ViewById;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Created by nick on 7/29/16.
@@ -42,12 +44,19 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
     @Extra
     protected int songIndex;
 
+    private boolean isShuffle = false;
+    private boolean isRepeat = false;
+
     @ViewById
     protected ImageButton play;
     @ViewById
     protected ImageButton next;
     @ViewById
     protected ImageButton previous;
+    @ViewById
+    protected ImageButton repeat;
+    @ViewById
+    protected ImageButton shuffle;
     @ViewById
     protected TextView songTitle;
     @ViewById
@@ -129,14 +138,40 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
         }
     }
 
+    @Click
     @Override
     public void repeat() {
-
+        if(isRepeat){
+            isRepeat = false;
+            Toast.makeText(getApplicationContext(), "Repeat is OFF", Toast.LENGTH_SHORT).show();
+            repeat.setImageResource(R.drawable.btn_repeat);
+        }else{
+            // make repeat to true
+            isRepeat = true;
+            Toast.makeText(getApplicationContext(), "Repeat is ON", Toast.LENGTH_SHORT).show();
+            // make shuffle to false
+            isShuffle = false;
+            repeat.setImageResource(R.drawable.btn_repeat_focused);
+            shuffle.setImageResource(R.drawable.btn_shuffle);
+        }
     }
 
+    @Click
     @Override
     public void shuffle() {
-
+        if(isShuffle){
+            isShuffle = false;
+            Toast.makeText(getApplicationContext(), "Shuffle is OFF", Toast.LENGTH_SHORT).show();
+            shuffle.setImageResource(R.drawable.btn_shuffle);
+        }else{
+            // make repeat to true
+            isShuffle= true;
+            Toast.makeText(getApplicationContext(), "Shuffle is ON", Toast.LENGTH_SHORT).show();
+            // make shuffle to false
+            isRepeat = false;
+            shuffle.setImageResource(R.drawable.btn_shuffle_focused);
+            repeat.setImageResource(R.drawable.btn_repeat);
+        }
     }
 
     @Override
@@ -206,7 +241,26 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-
+        // check for repeat is ON or OFF
+        if(isRepeat){
+            // repeat is on play same song again
+            playSong(currentSongIndex);
+        } else if(isShuffle){
+            // shuffle is on - play a random song
+            Random rand = new Random();
+            currentSongIndex = rand.nextInt((songList.size() ) - 0 + 1);
+            playSong(currentSongIndex);
+        } else{
+            // no repeat or shuffle ON - play next song
+            if(currentSongIndex < (songList.size() - 1)){
+                playSong(currentSongIndex + 1);
+                currentSongIndex = currentSongIndex + 1;
+            }else{
+                // play first song
+                playSong(0);
+                currentSongIndex = 0;
+            }
+        }
     }
 
     @Override
