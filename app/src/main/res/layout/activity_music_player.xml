@@ -41,6 +41,14 @@
             android:background="@drawable/rounded_corner"
             android:paddingLeft="10dp"
             android:paddingRight="10dp">
+            <!-- Shuffle Button -->
+            <ImageButton
+                android:id="@+id/shuffle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/btn_shuffle"
+                android:layout_marginLeft="5dp"
+                android:background="@null"/>
             <!-- Previous Button -->
             <ImageButton
                 android:id="@+id/previous"
@@ -48,13 +56,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@null"/>
-            <!-- Backward Button -->
-            <ImageButton
-                android:id="@+id/btnBackward"
-                android:src="@drawable/btn_backward"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"/>
+            <!--&lt;!&ndash; Backward Button &ndash;&gt;-->
+            <!--<ImageButton-->
+                <!--android:id="@+id/btnBackward"-->
+                <!--android:src="@drawable/btn_backward"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:background="@null"/>-->
             <!-- Play Button -->
             <ImageButton
                 android:id="@+id/play"
@@ -63,12 +71,12 @@
                 android:layout_height="wrap_content"
                 android:background="@null"/>
             <!-- Forward Button -->
-            <ImageButton
-                android:id="@+id/btnForward"
-                android:src="@drawable/btn_forward"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"/>
+            <!--<ImageButton-->
+                <!--android:id="@+id/btnForward"-->
+                <!--android:src="@drawable/btn_forward"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:background="@null"/>-->
             <!-- Next Button -->
             <ImageButton
                 android:id="@+id/next"
@@ -76,6 +84,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@null"/>
+            <!-- Repeat Button -->
+            <ImageButton
+                android:id="@+id/repeat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/btn_repeat"
+                android:layout_marginRight="5dp"
+                android:background="@null"/>
+
+
         </LinearLayout>
     </LinearLayout>
 
@@ -122,28 +140,5 @@
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <!-- Repeat / Shuffle buttons -->
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/timerDisplay"
-        android:gravity="center">
-        <!-- Repeat Button -->
-        <ImageButton
-            android:id="@+id/repeat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/btn_repeat"
-            android:layout_marginRight="5dp"
-            android:background="@null"/>
 
-        <!-- Shuffle Button -->
-        <ImageButton
-            android:id="@+id/shuffle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/btn_shuffle"
-            android:layout_marginLeft="5dp"
-            android:background="@null"/>
-    </LinearLayout>
 </RelativeLayout>
