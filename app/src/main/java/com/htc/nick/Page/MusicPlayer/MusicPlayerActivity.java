@@ -71,16 +71,15 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
         super.onCreate(savedInstanceState);
         mp = new MediaPlayer();
         utils = new Utilities();
+        songManager = new SongManager(this);
     }
 
     @AfterViews
     protected void init(){
 
-        songManager = new SongManager(this);
-        //Listeners
         songProgressBar.setOnSeekBarChangeListener(this);
         mp.setOnCompletionListener(this);
-        //data
+
         songList = songManager.getSongList();
 
         currentSongIndex = songIndex;
@@ -89,29 +88,24 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
     @Click
     @Override
     public void play() {
-        if(mp.isPlaying()){
-            if(mp!=null){
+        if(mp.isPlaying()&& mp!=null){
                 mp.pause();
                 play.setImageResource(R.drawable.btn_play);
-            }
         }else{
-            // Resume song
-            if(mp!=null){
                 mp.start();
                 play.setImageResource(R.drawable.btn_pause);
-            }
         }
     }
 
 
     @Override
     public void backward() {
-
+     // TODO: 2016/8/1 backward
     }
 
     @Override
     public void forward() {
-
+        // TODO: 2016/8/1 forward
     }
 
     @Click
@@ -143,16 +137,14 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
     public void repeat() {
         if(isRepeat){
             isRepeat = false;
-            Toast.makeText(getApplicationContext(), "Repeat is OFF", Toast.LENGTH_SHORT).show();
             repeat.setImageResource(R.drawable.btn_repeat);
+            Toast.makeText(getApplicationContext(), "Repeat OFF", Toast.LENGTH_SHORT).show();
         }else{
-            // make repeat to true
             isRepeat = true;
-            Toast.makeText(getApplicationContext(), "Repeat is ON", Toast.LENGTH_SHORT).show();
-            // make shuffle to false
             isShuffle = false;
             repeat.setImageResource(R.drawable.btn_repeat_focused);
             shuffle.setImageResource(R.drawable.btn_shuffle);
+            Toast.makeText(getApplicationContext(), "Repeat ON", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -161,31 +153,27 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
     public void shuffle() {
         if(isShuffle){
             isShuffle = false;
-            Toast.makeText(getApplicationContext(), "Shuffle is OFF", Toast.LENGTH_SHORT).show();
             shuffle.setImageResource(R.drawable.btn_shuffle);
+            Toast.makeText(getApplicationContext(), "Shuffle OFF", Toast.LENGTH_SHORT).show();
         }else{
-            // make repeat to true
             isShuffle= true;
-            Toast.makeText(getApplicationContext(), "Shuffle is ON", Toast.LENGTH_SHORT).show();
-            // make shuffle to false
             isRepeat = false;
             shuffle.setImageResource(R.drawable.btn_shuffle_focused);
             repeat.setImageResource(R.drawable.btn_repeat);
+            Toast.makeText(getApplicationContext(), "Shuffle ON", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void playSong(int index) {
 
-            // Play song
             try {
                 mp.reset();
                 mp.setDataSource(songManager.getSongList().get(index).get("songPath"));
                 mp.prepare();
                 mp.start();
 
-                String title = songList.get(index).get("songTitle");
-                songTitle.setText(title);
+                songTitle.setText(songList.get(index).get("songTitle"));
 
                 play.setImageResource(R.drawable.btn_pause);
 
@@ -204,32 +192,23 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
 
     }
 
-    /**
-     * Update timer on seekbar
-     * */
     public void updateProgressBar() {
         mHandler.postDelayed(mUpdateTimeTask, 100);
     }
 
-    /**
-     * Background Runnable thread
-     * */
     private Runnable mUpdateTimeTask = new Runnable() {
         public void run() {
             long totalDuration = mp.getDuration();
             long currentDuration = mp.getCurrentPosition();
 
-            // Displaying Total Duration time
             songTotalDurationLabel.setText(""+utils.milliSecondsToTimer(totalDuration));
-            // Displaying time completed playing
+
             songCurrentDurationLabel.setText(""+utils.milliSecondsToTimer(currentDuration));
 
-            // Updating progress bar
             int progress = utils.getProgressPercentage(currentDuration, totalDuration);
-            //Log.d("Progress", ""+progress);
+
             songProgressBar.setProgress(progress);
 
-            // Running this thread after 100 milliseconds
             mHandler.postDelayed(this, 100);
         }
     };
@@ -240,23 +219,18 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
 
 
     @Override
-    public void onCompletion(MediaPlayer mp) {
-        // check for repeat is ON or OFF
+    public void onCompletion(MediaPlayer mp) {  // song finished
         if(isRepeat){
-            // repeat is on play same song again
             playSong(currentSongIndex);
         } else if(isShuffle){
-            // shuffle is on - play a random song
             Random rand = new Random();
-            currentSongIndex = rand.nextInt((songList.size() ) - 0 + 1);
+            currentSongIndex = rand.nextInt(songList.size()+ 1);
             playSong(currentSongIndex);
         } else{
-            // no repeat or shuffle ON - play next song
             if(currentSongIndex < (songList.size() - 1)){
                 playSong(currentSongIndex + 1);
                 currentSongIndex = currentSongIndex + 1;
             }else{
-                // play first song
                 playSong(0);
                 currentSongIndex = 0;
             }
@@ -265,7 +239,6 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
     }
 
     @Override
@@ -275,13 +248,8 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        int totalDuration = mp.getDuration();
-        int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
-
-        // forward or backward to certain seconds
+        int currentPosition = utils.progressToTimer(seekBar.getProgress(), mp.getDuration());
         mp.seekTo(currentPosition);
-
-        // update timer progress again
         updateProgressBar();
     }
 
