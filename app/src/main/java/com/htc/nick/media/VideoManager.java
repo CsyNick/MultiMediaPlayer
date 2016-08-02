@@ -7,12 +7,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import com.htc.nick.Item.VideoItem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by nick on 7/28/16.
@@ -36,7 +34,6 @@ public class VideoManager {
         int i = 0;
         if (cursor.moveToFirst()) {
             do {
-
                 videos[i] = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME));
                 videoPath[i] = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
                 int videoId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
@@ -44,8 +41,8 @@ public class VideoManager {
                 BitmapFactory.Options options=new BitmapFactory.Options();
                 options.inDither = false;
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-                thumbnails[i] = MediaStore.Video.Thumbnails.getThumbnail(cr, videoId, MediaStore.Video.Thumbnails.MINI_KIND, options);
+                options.inJustDecodeBounds = false;
+                thumbnails[i] = MediaStore.Video.Thumbnails.getThumbnail(cr, videoId, MediaStore.Video.Thumbnails.MICRO_KIND, options);
                 videoItem = new VideoItem(videos[i],videoPath[i],thumbnails[i]);
                 videoList.add(videoItem);
                 i++;

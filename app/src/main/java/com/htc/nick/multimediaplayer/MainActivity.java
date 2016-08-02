@@ -2,18 +2,14 @@ package com.htc.nick.multimediaplayer;
 
 
 
-import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.SyncStateContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTabHost;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,7 +20,7 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.htc.nick.Base.Constants;
-import com.htc.nick.fragment.AudioFragment;
+import com.htc.nick.fragment.SongFragment;
 import com.htc.nick.fragment.PhotoFragment;
 import com.htc.nick.fragment.VideoFragment;
 
@@ -37,9 +33,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private FragmentTabHost mTabHost;
     private ViewPager mViewPager;
     private List<Fragment> mFragmentList;
-    private Class mClass[] = {AudioFragment.class,VideoFragment.class,PhotoFragment.class};
-    private Fragment mFragment[] = {new AudioFragment(),new VideoFragment(),new PhotoFragment()};
-    private String mTitles[] = {"Audio","Video","Photo"};
+    private Class mClass[] = {SongFragment.class,VideoFragment.class,PhotoFragment.class};
+    private Fragment mFragment[] = {new SongFragment(),new VideoFragment(),new PhotoFragment()};
+    private String mTitles[] = {"Music","Video","Photo"};
     private int mImages[] = {
             R.mipmap.headset,
             R.mipmap.video,
@@ -50,16 +46,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        init();
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        setContentView(R.layout.activity_main_music);
 
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
-        } else {
-            //init();
-        }
+       init();
     }
 
     private void init() {
