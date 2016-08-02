@@ -34,8 +34,9 @@ public class PhotoManager {
         if (cursor.moveToFirst()) {
             do {
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
-                String uri = cursor.getString( cursor.getColumnIndex( MediaStore.Images.Thumbnails.DATA ) );
-                photoList.add(new PhotoItem(name,uri));
+                String thumbnailUri = cursor.getString( cursor.getColumnIndex( MediaStore.Images.Thumbnails.DATA ) );
+                String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                photoList.add(new PhotoItem(name,path,thumbnailUri));
             } while (cursor.moveToNext());
         }
 

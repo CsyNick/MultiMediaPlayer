@@ -13,7 +13,6 @@ import org.androidannotations.annotations.EBean;
 @EBean
 public class MusicPlayerPresenter extends BasePresenter {
     private final MusicPlayerView view;
-    private MediaPlayer mp = new MediaPlayer();
     public MusicPlayerPresenter(Context context) {
         super(context);
         this.view = (MusicPlayerView) context;

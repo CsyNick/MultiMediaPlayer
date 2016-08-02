@@ -5,20 +5,15 @@ package com.htc.nick.Item;
  */
 public class PhotoItem {
     private String name;
-    private String uri;
+    private String path;
+    private String thumbnailUri;
 
-    public PhotoItem(String name, String uri) {
+    public PhotoItem(String name,String path, String thumbnailUri) {
         this.name = name;
-        this.uri = uri;
+        this.path = path;
+        this.thumbnailUri = thumbnailUri;
     }
 
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
 
     public String getName() {
         return name;
@@ -26,5 +21,21 @@ public class PhotoItem {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getThumbnailUri() {
+        return thumbnailUri;
+    }
+
+    public void setThumbnailUri(String thumbnailUri) {
+        this.thumbnailUri = thumbnailUri;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

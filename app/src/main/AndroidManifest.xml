@@ -29,6 +29,11 @@
             android:theme="@style/AppTheme" >
 
         </activity>
+        <activity android:name="com.htc.nick.Page.PhotoViewer.FullScreenViewActivity_"
+            android:label="FullScreenView"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
     </application>
 
 

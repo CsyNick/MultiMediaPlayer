@@ -2,7 +2,7 @@ package com.htc.nick.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +12,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.htc.nick.Item.PhotoItem;
-import com.htc.nick.Item.VideoItem;
+import com.htc.nick.Page.PhotoViewer.FullScreenViewActivity;
+import com.htc.nick.Page.PhotoViewer.FullScreenViewActivity_;
 import com.htc.nick.multimediaplayer.R;
 
 import java.util.ArrayList;
@@ -51,13 +52,35 @@ public class PhotoGridViewAdapter extends ArrayAdapter<PhotoItem> {
         }
 
         Glide.with(context)
-                .load(data.get(position).getUri())
+                .load(data.get(position).getThumbnailUri())
                 .thumbnail(0.1f)
                 .into(holder.thumbnail);
+
+        holder.thumbnail.setOnClickListener(new OnImageClickListener(position));
         return row;
 
     }
 
+
+    class OnImageClickListener implements View.OnClickListener {
+
+        int _postion;
+
+        // constructor
+        public OnImageClickListener(int position) {
+            this._postion = position;
+        }
+
+        @Override
+        public void onClick(View v) {
+            // on selecting grid view image
+            // launch full screen activity
+            Intent i = new Intent(getContext(), FullScreenViewActivity_.class);
+            i.putExtra("position", _postion);
+            getContext().startActivity(i);
+        }
+
+    }
     static class ViewHolder {
         TextView fileName;
         ImageView thumbnail;
