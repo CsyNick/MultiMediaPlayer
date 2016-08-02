@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.htc.nick.Item.PhotoItem;
 import com.htc.nick.Item.VideoItem;
 import com.htc.nick.multimediaplayer.R;
 
@@ -18,13 +20,13 @@ import java.util.ArrayList;
 /**
  * Created by nick on 7/28/16.
  */
-public class PhotoGridViewAdapter extends ArrayAdapter<Bitmap> {
+public class PhotoGridViewAdapter extends ArrayAdapter<PhotoItem> {
     private Context context;
     private int layoutResourceId;
-    private ArrayList<Bitmap> data = new ArrayList<>();
+    private ArrayList<PhotoItem> data = new ArrayList<>();
 
 
-    public PhotoGridViewAdapter(Context context, int resource, ArrayList<Bitmap> videoItems) {
+    public PhotoGridViewAdapter(Context context, int resource, ArrayList<PhotoItem> videoItems) {
         super(context, resource, videoItems);
         this.context = context;
         this.layoutResourceId = resource;
@@ -48,9 +50,10 @@ public class PhotoGridViewAdapter extends ArrayAdapter<Bitmap> {
             holder = (ViewHolder) row.getTag();
         }
 
-
-        Bitmap item = data.get(position);
-        holder.thumbnail.setImageBitmap(item);
+        Glide.with(context)
+                .load(data.get(position).getUri())
+                .thumbnail(0.1f)
+                .into(holder.thumbnail);
         return row;
 
     }

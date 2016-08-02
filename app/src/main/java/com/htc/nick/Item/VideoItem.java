@@ -8,22 +8,22 @@ import android.graphics.Bitmap;
 public class VideoItem {
     private String fileName;
     private String path;
-    private Bitmap thumbnail;
+    private String thumbnailUri;
 
 
-    public VideoItem(String fileName,String path,Bitmap thumbnail) {
+    public VideoItem(String fileName,String path,String thumbnailUri) {
         super();
         this.fileName = fileName;
         this.path = path;
-        this.thumbnail = thumbnail;
+        this.thumbnailUri = thumbnailUri;
     }
 
-    public Bitmap getThumbnail() {
-        return thumbnail;
+    public String getThumbnail() {
+        return thumbnailUri;
     }
 
-    public void setThumbnail(Bitmap thumbnail) {
-        this.thumbnail = thumbnail;
+    public void setThumbnailUri(String thumbnailUri) {
+        this.thumbnailUri = thumbnailUri;
     }
 
     public String getFileName() {
