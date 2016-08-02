@@ -1,12 +1,8 @@
 package com.htc.nick.fragment;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -19,16 +15,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.htc.nick.Adapter.PhotoGridViewAdapter;
 import com.htc.nick.Base.Constants;
-import com.htc.nick.Page.MusicPlayer.MusicPlayerActivity;
 import com.htc.nick.Page.MusicPlayer.MusicPlayerActivity_;
 import com.htc.nick.media.SongManager;
 import com.htc.nick.multimediaplayer.R;
 
-import org.androidannotations.annotations.EFragment;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 

@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.htc.nick.Item.PhotoItem;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,35 +18,25 @@ import java.util.HashMap;
  */
 public class PhotoManager {
 
-    private ArrayList<Bitmap> photoList = new ArrayList<>();
+    private ArrayList<PhotoItem> photoList = new ArrayList<>();
     private Context context;
 
     public PhotoManager(Context context) {
         this.context = context;
     }
 
-    public ArrayList<Bitmap> getPhotoList() {
+    public ArrayList<PhotoItem> getPhotoList() {
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 new String[]{MediaStore.Images.Media._ID,MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA}, null, null,
                 "LOWER(" + MediaStore.Images.Media.TITLE + ") ASC");
 
-        int count = cursor.getCount();
-
-        Bitmap[] photos = new Bitmap[count];
-
-        int i = 0;
         if (cursor.moveToFirst()) {
             do {
-                int photoId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
-                ContentResolver cr = context.getContentResolver();
-                BitmapFactory.Options options=new BitmapFactory.Options();
-                options.inDither = false;
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                photos[i] =  MediaStore.Images.Thumbnails.getThumbnail(cr, photoId, MediaStore.Images.Thumbnails.MICRO_KIND, options);
-                photoList.add(photos[i]);
-                i++;
-
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
+                String thumbnailUri = cursor.getString( cursor.getColumnIndex( MediaStore.Images.Thumbnails.DATA ) );
+                String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                photoList.add(new PhotoItem(name,path,thumbnailUri));
             } while (cursor.moveToNext());
         }
 

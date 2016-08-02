@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.htc.nick.Item.VideoItem;
 import com.htc.nick.multimediaplayer.R;
 
@@ -51,7 +52,10 @@ public class VideoGridViewAdapter extends ArrayAdapter<VideoItem> {
 
         VideoItem item = data.get(position);
         holder.fileName.setText(item.getFileName());
-        holder.thumbnail.setImageBitmap(item.getThumbnail());
+        Glide.with(context)
+                .load(data.get(position).getThumbnail())
+                .thumbnail(0.1f)
+                .into(holder.thumbnail);
         return row;
 
     }
