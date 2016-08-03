@@ -27,7 +27,7 @@ public class VideoManager {
         Uri uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Video.Media._ID,MediaStore.Video.Media.DISPLAY_NAME,MediaStore.Video.VideoColumns.DATA};
         Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
-        int i = 0;
+        videoList.clear();
         if (cursor.moveToFirst()) {
             do {
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME));
@@ -35,7 +35,6 @@ public class VideoManager {
                 String thumbnailsUri = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Thumbnails.DATA));
                 videoItem = new VideoItem(name,videoPath,thumbnailsUri);
                 videoList.add(videoItem);
-                i++;
             } while (cursor.moveToNext());
         }
         return videoList;
