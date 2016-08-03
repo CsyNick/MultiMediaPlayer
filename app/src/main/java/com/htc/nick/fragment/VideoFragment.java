@@ -21,6 +21,7 @@ import com.htc.nick.Adapter.VideoGridViewAdapter;
 import com.htc.nick.Base.Constants;
 import com.htc.nick.Item.VideoItem;
 import com.htc.nick.Page.VideoPlayer.VideoPlayerActivity;
+import com.htc.nick.Page.VideoPlayer.VideoPlayerActivity_;
 import com.htc.nick.media.VideoManager;
 import com.htc.nick.multimediaplayer.R;
 
@@ -68,7 +69,7 @@ public class VideoFragment extends Fragment {
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                    Intent intent = new Intent( view.getContext() , VideoPlayerActivity.class);
+                    Intent intent = new Intent( view.getContext() , VideoPlayerActivity_.class);
                     intent.putExtra(MEDIA, 4);
                     intent.putExtra	(URL, videoManager.getVideoList().get(position).getPath());
                     startActivity(intent);
