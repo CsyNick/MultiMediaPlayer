@@ -62,6 +62,9 @@ public class VideoPlayerActivity extends Activity implements
     @ViewById
     protected SurfaceView surface;
 
+    private boolean mIsVideoSizeKnown = false;
+    private boolean mIsVideoReadyToBePlayed = false;
+
     /**
      * Called when the activity is first created.
      */
@@ -175,11 +178,11 @@ public class VideoPlayerActivity extends Activity implements
     }
 
     public void onStopTrackingTouch(SeekBar seekBar) {
-       // if (player.isPlaying()) {
-            progressBarWait.setVisibility(View.VISIBLE);
-            player.seekTo(seekBar.getProgress() * 1000);
-            Log.i(TAG, "========== SeekTo : " + seekBar.getProgress());
-       // }
+        // if (player.isPlaying()) {
+        progressBarWait.setVisibility(View.VISIBLE);
+        player.seekTo(seekBar.getProgress() * 1000);
+        Log.i(TAG, "========== SeekTo : " + seekBar.getProgress());
+        // }
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
@@ -193,10 +196,11 @@ public class VideoPlayerActivity extends Activity implements
 
     public void surfaceDestroyed(SurfaceHolder holder) {
         // TODO Auto-generated method stub
-        // player.stop();
+        player.stop();
     }
 
     public void onPrepared(MediaPlayer mp) {
+        mIsVideoReadyToBePlayed = true;
         Log.i(TAG, "========== onPrepared ===========");
         int duration = mp.getDuration() / 1000; // duration in seconds
         seekBarProgress.setMax(duration);
@@ -231,6 +235,7 @@ public class VideoPlayerActivity extends Activity implements
 
         // Start video
         if (!player.isPlaying()) {
+
             player.start();
             updateMediaProgress();
             linearLayoutMediaController.setVisibility(View.VISIBLE);
@@ -290,22 +295,15 @@ public class VideoPlayerActivity extends Activity implements
         progressBarWait.setVisibility(View.GONE);
     }
 
-    public void onAnimationEnd(Animation animation) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void onAnimationRepeat(Animation animation) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void onAnimationStart(Animation animation) {
-        linearLayoutMediaController.setVisibility(View.GONE);
-    }
 
     @Override
-    public void onVideoSizeChanged(MediaPlayer mediaPlayer, int i, int i1) {
+    public void onVideoSizeChanged(MediaPlayer mediaPlayer, int width, int height) {
+        mIsVideoSizeKnown = true;
+
+
+                holder.setFixedSize(width, height);
+                player.start();
+
 
     }
 
@@ -324,4 +322,6 @@ public class VideoPlayerActivity extends Activity implements
         }
         releaseMediaPlayer();
     }
+
+
 }
