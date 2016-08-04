@@ -2,6 +2,7 @@ package com.htc.nick.multimediaplayer;
 
 
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.htc.nick.Base.Constants;
+import com.htc.nick.Page.SlideShowPlayer.SlideShowPlayerActivity;
 import com.htc.nick.fragment.SongFragment;
 import com.htc.nick.fragment.PhotoFragment;
 import com.htc.nick.fragment.VideoFragment;
@@ -168,6 +170,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
             case R.id.slideshow:
                 // User chose the "Settings" item, show the app settings UI...
+                Intent in = new Intent();
+                in.setClass(this, SlideShowPlayerActivity.class);
+                startActivity(in);
                 return true;
 
             default:

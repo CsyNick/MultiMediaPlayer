@@ -38,7 +38,11 @@
         <activity android:name="com.htc.nick.Page.VideoPlayer.VideoPlayerActivity_"
             android:label="VideoPlayer"
             android:theme="@style/Theme.AppCompat.NoActionBar">
-
+        </activity>
+        <activity android:name="com.htc.nick.Page.SlideShowPlayer.SlideShowPlayerActivity"
+            android:label="SlideShowPlayer"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
     </application>
 
