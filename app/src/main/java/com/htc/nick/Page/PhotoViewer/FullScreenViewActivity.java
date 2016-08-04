@@ -43,7 +43,6 @@ public class FullScreenViewActivity extends BaseActivity<FullScreenView,FullScre
     @AfterViews
     protected void init(){
 
-
         Intent i = getIntent();
         int position = i.getIntExtra("position", 0);
         photoManager = new PhotoManager(this);

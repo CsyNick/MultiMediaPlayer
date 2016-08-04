@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.htc.nick.Item.PhotoItem;
-import com.htc.nick.Page.PhotoViewer.FullScreenViewActivity;
 import com.htc.nick.Page.PhotoViewer.FullScreenViewActivity_;
 import com.htc.nick.multimediaplayer.R;
 
