@@ -34,7 +34,6 @@
             android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
         <activity android:name="com.htc.nick.Page.VideoPlayer.VideoPlayerActivity_"
-            android:configChanges="orientation|screenSize"
             android:label="VideoPlayer"
             android:theme="@style/Theme.AppCompat.NoActionBar">
 

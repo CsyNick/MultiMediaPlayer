@@ -12,6 +12,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaPlayer.OnVideoSizeChangedListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.htc.nick.multimediaplayer.R;
+import com.htc.nick.util.Utilities;
 import com.htc.nick.util.Utils;
 
 import org.androidannotations.annotations.AfterViews;
@@ -38,7 +40,7 @@ public class VideoPlayerActivity extends Activity implements
         OnPreparedListener, OnVideoSizeChangedListener, SurfaceHolder.Callback,
         SeekBar.OnSeekBarChangeListener,MediaPlayer.OnSeekCompleteListener,View.OnClickListener {
 
-    private static final String TAG = "MediaPlayerDemo";
+    private static final String TAG = "VideoPlayer";
     private MediaPlayer player;
 
     private SurfaceHolder holder;
@@ -61,9 +63,12 @@ public class VideoPlayerActivity extends Activity implements
     protected LinearLayout linearLayoutMediaController;
     @ViewById
     protected SurfaceView surface;
+    @ViewById
+    protected TextView videoTitle;
 
-    private boolean mIsVideoSizeKnown = false;
-    private boolean mIsVideoReadyToBePlayed = false;
+    private static final String URL = "url";
+    private static final String TITLE = "title";
+
 
     /**
      * Called when the activity is first created.
@@ -71,8 +76,6 @@ public class VideoPlayerActivity extends Activity implements
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-
-
         extras = getIntent().getExtras();
         player = new MediaPlayer();
         player.setOnPreparedListener(this);
@@ -80,6 +83,7 @@ public class VideoPlayerActivity extends Activity implements
         player.setOnBufferingUpdateListener(this);
         player.setOnSeekCompleteListener(this);
         player.setScreenOnWhilePlaying(true);
+        player.setOnVideoSizeChangedListener(this);
 
 
     }
@@ -88,7 +92,6 @@ public class VideoPlayerActivity extends Activity implements
     protected void init() {
         holder = surface.getHolder();
         holder.addCallback(this);
-        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         surface.setOnClickListener(this);
         surface.setClickable(false);
         linearLayoutMediaController.setVisibility(View.GONE);
@@ -107,17 +110,18 @@ public class VideoPlayerActivity extends Activity implements
         seekBarProgress.setProgress(0);
 
         progressBarWait = (ProgressBar) findViewById(R.id.progressBarWait);
-
+        videoTitle.setText(extras.getString(TITLE));
     }
 
     private void playVideo() {
-        if (extras.getString("url").equals("VIDEO_URI")) {
+        if (extras.getString(URL).equals("VIDEO_URI")) {
             showToast("Please, set the video URI in HelloAndroidActivity.java in onClick(View v) method");
         } else {
             new Thread(new Runnable() {
                 public void run() {
                     try {
-                        player.setDataSource(extras.getString("url"));
+                        seekBarProgress.setProgress(0);
+                        player.setDataSource(extras.getString(URL));
                         player.setDisplay(holder);
                         player.prepare();
                     } catch (IllegalArgumentException e) {
@@ -196,11 +200,9 @@ public class VideoPlayerActivity extends Activity implements
 
     public void surfaceDestroyed(SurfaceHolder holder) {
         // TODO Auto-generated method stub
-        player.stop();
     }
 
     public void onPrepared(MediaPlayer mp) {
-        mIsVideoReadyToBePlayed = true;
         Log.i(TAG, "========== onPrepared ===========");
         int duration = mp.getDuration() / 1000; // duration in seconds
         seekBarProgress.setMax(duration);
@@ -262,7 +264,9 @@ public class VideoPlayerActivity extends Activity implements
             public void run() {
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        seekBarProgress.setProgress(player.getCurrentPosition() / 1000);
+                        if(player!=null) {
+                            seekBarProgress.setProgress(player.getCurrentPosition() / 1000);
+                        }
                     }
                 });
             }
@@ -298,12 +302,10 @@ public class VideoPlayerActivity extends Activity implements
 
     @Override
     public void onVideoSizeChanged(MediaPlayer mediaPlayer, int width, int height) {
-        mIsVideoSizeKnown = true;
-
-
-                holder.setFixedSize(width, height);
-                player.start();
-
+        Log.d(TAG,"onVideoSizeChanged called");
+        if(width == 0 || height ==0){
+            Log.e(TAG,"invalid video width("+width+")"+"or height("+height+")");
+        }
 
     }
 
