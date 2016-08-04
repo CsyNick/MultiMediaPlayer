@@ -1,10 +1,7 @@
-package com.htc.nick.media;
+package com.htc.nick.mediaManager;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 

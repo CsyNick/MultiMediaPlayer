@@ -17,7 +17,7 @@ import android.widget.ListView;
 
 import com.htc.nick.Base.Constants;
 import com.htc.nick.Page.MusicPlayer.MusicPlayerActivity_;
-import com.htc.nick.media.SongManager;
+import com.htc.nick.mediaManager.SongManager;
 import com.htc.nick.multimediaplayer.R;
 
 import java.util.ArrayList;

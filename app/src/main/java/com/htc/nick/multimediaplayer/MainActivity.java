@@ -14,6 +14,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TabHost;
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private FragmentTabHost mTabHost;
     private ViewPager mViewPager;
     private List<Fragment> mFragmentList;
+    Menu menu;
     private Class mClass[] = {SongFragment.class,VideoFragment.class,PhotoFragment.class};
     private Fragment mFragment[] = {new SongFragment(),new VideoFragment(),new PhotoFragment()};
     private String mTitles[] = {"Music","Video","Photo"};
@@ -63,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         setSupportActionBar(toolbar);
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
-
         mFragmentList = new ArrayList<>();
 
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
@@ -119,6 +122,12 @@ public class MainActivity extends AppCompatActivity implements MainView {
             @Override
             public void onPageSelected(int position) {
                 mTabHost.setCurrentTab(position);
+                if(position==2){
+                    menu.findItem(R.id.slideshow).setVisible(true);
+                }else {
+                    menu.findItem(R.id.slideshow).setVisible(false);
+                }
+
             }
 
             @Override
@@ -141,6 +150,31 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
             default:
                 break;
+        }
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        this.menu =menu;
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                // User chose the "Settings" item, show the app settings UI...
+                return true;
+
+            case R.id.slideshow:
+                // User chose the "Settings" item, show the app settings UI...
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
         }
     }
 }

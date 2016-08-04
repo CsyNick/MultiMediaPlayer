@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.htc.nick.Base.BaseActivity;
-import com.htc.nick.media.SongManager;
+import com.htc.nick.mediaManager.SongManager;
 import com.htc.nick.multimediaplayer.R;
 import com.htc.nick.util.Utilities;
 

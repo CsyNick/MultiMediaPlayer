@@ -1,4 +1,4 @@
-package com.htc.nick.media;
+package com.htc.nick.mediaManager;
 
 import android.content.Context;
 import android.database.Cursor;
