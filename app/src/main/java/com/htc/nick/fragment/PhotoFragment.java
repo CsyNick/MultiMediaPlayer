@@ -16,7 +16,7 @@ import android.widget.GridView;
 
 import com.htc.nick.Adapter.PhotoGridViewAdapter;
 import com.htc.nick.Base.Constants;
-import com.htc.nick.media.PhotoManager;
+import com.htc.nick.mediaManager.PhotoManager;
 import com.htc.nick.multimediaplayer.R;
 
 /**

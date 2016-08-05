@@ -26,4 +26,13 @@
         android:paddingRight="10dp"
         android:text="Close" />
 
+    <ImageButton
+        android:id="@+id/moreInfo"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:src="@mipmap/moreinfo"/>
+
 </RelativeLayout>

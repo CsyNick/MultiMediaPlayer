@@ -14,15 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.TextView;
 
-import com.htc.nick.Adapter.PhotoGridViewAdapter;
 import com.htc.nick.Adapter.VideoGridViewAdapter;
 import com.htc.nick.Base.Constants;
 import com.htc.nick.Item.VideoItem;
-import com.htc.nick.Page.VideoPlayer.VideoPlayerActivity;
 import com.htc.nick.Page.VideoPlayer.VideoPlayerActivity_;
-import com.htc.nick.media.VideoManager;
+import com.htc.nick.mediaManager.VideoManager;
 import com.htc.nick.multimediaplayer.R;
 
 import java.util.ArrayList;
