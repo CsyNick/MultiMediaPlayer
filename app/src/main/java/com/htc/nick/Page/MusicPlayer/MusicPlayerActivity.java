@@ -4,6 +4,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -108,24 +109,36 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
     @Click
     @Override
     public void next() {
-        if(currentSongIndex < (songList.size() - 1)){
-            playSong(currentSongIndex + 1);
-            currentSongIndex = currentSongIndex + 1;
+        if(isShuffle){
+            Random rand = new Random();
+            currentSongIndex = rand.nextInt((songList.size() - 1) - 0 + 1) + 0;
+            playSong(currentSongIndex);
         }else {
-            playSong(0);
-            currentSongIndex = 0;
+            if (currentSongIndex < (songList.size() - 1)) {
+                playSong(currentSongIndex + 1);
+                currentSongIndex = currentSongIndex + 1;
+            } else {
+                playSong(0);
+                currentSongIndex = 0;
+            }
         }
     }
 
     @Click
     @Override
     public void previous() {
-        if(currentSongIndex > 0){
-            playSong(currentSongIndex - 1);
-            currentSongIndex = currentSongIndex -1;
+        if(isShuffle){
+            Random rand = new Random();
+            currentSongIndex = rand.nextInt((songList.size() - 1) - 0 + 1) + 0;
+            playSong(currentSongIndex);
         }else {
-            playSong(songList.size() - 1);
-            currentSongIndex = songList.size() - 1;
+            if (currentSongIndex > 0) {
+                playSong(currentSongIndex - 1);
+                currentSongIndex = currentSongIndex - 1;
+            } else {
+                playSong(songList.size() - 1);
+                currentSongIndex = songList.size() - 1;
+            }
         }
     }
 
@@ -221,7 +234,8 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
             playSong(currentSongIndex);
         } else if(isShuffle){
             Random rand = new Random();
-            currentSongIndex = rand.nextInt(songList.size()+ 1);
+            currentSongIndex = rand.nextInt((songList.size() - 1) - 0 + 1) + 0;
+            Log.d("song-currentSongIndex",currentSongIndex+"");
             playSong(currentSongIndex);
         } else{
             if(currentSongIndex < (songList.size() - 1)){
