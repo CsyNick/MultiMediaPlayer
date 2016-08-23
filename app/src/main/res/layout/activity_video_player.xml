@@ -52,6 +52,13 @@
 
             </TextView>
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:src="@mipmap/pause"/>
+
             <SeekBar
                 android:id="@+id/seekBarProgress"
                 android:layout_weight="1"
@@ -97,7 +104,7 @@
             android:id="@+id/imageViewPauseIndicator"
             android:layout_gravity="center"
             android:visibility="gone"
-            android:src="@mipmap/pause">
+            android:src="@mipmap/play_button">
 
         </ImageView>
 

@@ -158,6 +158,7 @@ public class VideoPlayerActivity extends Activity implements
                     Thread.sleep(5000);
                     runOnUiThread(new Runnable() {
                         public void run() {
+                            videoTitle.setVisibility(View.GONE);
                             imageViewPauseIndicator.setVisibility(View.GONE);
                             linearLayoutMediaController.setVisibility(View.GONE);
                         }
@@ -251,7 +252,7 @@ public class VideoPlayerActivity extends Activity implements
         if (updateTimer != null) {
             updateTimer.cancel();
         }
-        finish();
+//        finish();
     }
 
     /**
@@ -282,14 +283,18 @@ public class VideoPlayerActivity extends Activity implements
         if (v.getId() == R.id.surface) {
             if (linearLayoutMediaController.getVisibility() == View.GONE) {
                 linearLayoutMediaController.setVisibility(View.VISIBLE);
+                imageViewPauseIndicator.setVisibility(View.VISIBLE);
+                videoTitle.setVisibility(View.VISIBLE);
                 hideMediaController();
             } else if (player != null) {
                 if (player.isPlaying()) {
                     player.pause();
+                    videoTitle.setVisibility(View.VISIBLE);
                     imageViewPauseIndicator.setVisibility(View.VISIBLE);
                 } else {
                     player.start();
                     imageViewPauseIndicator.setVisibility(View.GONE);
+                    videoTitle.setVisibility(View.GONE);
                 }
             }
         }
@@ -313,6 +318,7 @@ public class VideoPlayerActivity extends Activity implements
         if (player != null) {
             player.release();
             player = null;
+            seekBarProgress.setProgress(0);
         }
     }
 
