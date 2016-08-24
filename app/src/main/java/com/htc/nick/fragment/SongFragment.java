@@ -40,6 +40,7 @@ public class SongFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         songManager = new SongManager(getContext());
         songsListData = new ArrayList<>();
         songsListPath = new ArrayList<>();

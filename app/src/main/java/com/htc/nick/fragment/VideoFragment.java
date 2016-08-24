@@ -36,10 +36,12 @@ public class VideoFragment extends Fragment {
     private GridView gridView;
     private static final String URL = "url";
     private static final String TITLE = "title";
+    private static final String THUMBNAILS = "thumbnails";
     ArrayList<VideoItem> videoList = null;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         videoManager = new VideoManager(getContext());
 
     }
@@ -57,6 +59,7 @@ public class VideoFragment extends Fragment {
                     Intent intent = new Intent( view.getContext() , VideoPlayerActivity_.class);
                     intent.putExtra(TITLE,videoManager.getVideoList().get(position).getFileName());
                     intent.putExtra	(URL, videoManager.getVideoList().get(position).getPath());
+                    intent.putExtra(THUMBNAILS, videoManager.getVideoList().get(position).getThumbnail());
                     startActivity(intent);
                 }
             });

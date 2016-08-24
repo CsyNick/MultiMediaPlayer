@@ -44,14 +44,14 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
     mPlayer.setOnPreparedListener(this);
 
     PowerManager powerManager = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
-    wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "MyMediaPlayer");
+    wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyMediaPlayer");
   }
 
   /**
    * Sets up the surface dimensions to display
    * the video on it.
    */
-  private void setUpVideoDimensions() {
+  public void setUpVideoDimensions() {
     // Get the dimensions of the video
     int videoWidth = mPlayer.getVideoWidth();
     int videoHeight = mPlayer.getVideoHeight();
@@ -135,9 +135,10 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
    */
   public void release() {
     reset();
-
-    mPlayer.release();
-    mPlayer = null;
+    if (mPlayer!=null) {
+      mPlayer.release();
+      mPlayer = null;
+    }
   }
 
   /**
@@ -293,5 +294,8 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
 
   }
 
+  public MediaPlayer getmPlayer() {
+    return mPlayer;
+  }
 
 }

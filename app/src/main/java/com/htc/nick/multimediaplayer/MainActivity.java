@@ -124,12 +124,13 @@ public class MainActivity extends AppCompatActivity implements MainView {
             @Override
             public void onPageSelected(int position) {
                 mTabHost.setCurrentTab(position);
-                if(position==2){
-                    menu.findItem(R.id.slideshow).setVisible(true);
-                }else {
-                    menu.findItem(R.id.slideshow).setVisible(false);
+                if(menu!=null) {
+                    if (position == 2) {
+                        menu.findItem(R.id.slideshow).setVisible(true);
+                    } else {
+                        menu.findItem(R.id.slideshow).setVisible(false);
+                    }
                 }
-
             }
 
             @Override
