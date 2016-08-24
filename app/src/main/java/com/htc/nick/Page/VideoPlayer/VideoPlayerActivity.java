@@ -49,6 +49,7 @@ public class VideoPlayerActivity extends Activity implements
 
     private Timer updateTimer;
 
+    private boolean stopThread = false;
     @ViewById
     protected TextView textViewPlayed;
     @ViewById
@@ -154,40 +155,47 @@ public class VideoPlayerActivity extends Activity implements
     private void hideMediaController() {
         new Thread(new Runnable() {
             public void run() {
-                try {
-                    Thread.sleep(5000);
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            videoTitle.setVisibility(View.GONE);
-                            imageViewPauseIndicator.setVisibility(View.GONE);
-                            linearLayoutMediaController.setVisibility(View.GONE);
-                        }
-                    });
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                if (!stopThread) {
+                    try {
+                        Thread.sleep(5000);
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+
+                                videoTitle.setVisibility(View.GONE);
+                                imageViewPauseIndicator.setVisibility(View.GONE);
+                                linearLayoutMediaController.setVisibility(View.GONE);
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 }
             }
         }).start();
     }
 
+
+
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         Log.i(TAG, "========== onProgressChanged : " + progress + " from user: " + fromUser);
         if (!fromUser) {
+            stopThread = false;
             textViewPlayed.setText(Utils.durationInSecondsToString(progress));
         }
     }
 
     public void onStartTrackingTouch(SeekBar seekBar) {
         // TODO Auto-generated method stub
+
     }
 
     public void onStopTrackingTouch(SeekBar seekBar) {
-        // if (player.isPlaying()) {
-        progressBarWait.setVisibility(View.VISIBLE);
-        player.seekTo(seekBar.getProgress() * 1000);
+         if (player.isPlaying()) {
+             stopThread = true;
+             player.seekTo(seekBar.getProgress() * 1000);
         Log.i(TAG, "========== SeekTo : " + seekBar.getProgress());
-        // }
+         }
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
