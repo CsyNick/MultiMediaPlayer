@@ -44,7 +44,7 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 @EActivity(R.layout.activity_video_player)
-public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callback, View.OnClickListener {
+public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callback {
 
     private static final String TAG = "VideoPlayer";
 //    private MediaPlayer player;
@@ -59,10 +59,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     protected TextView textViewLength;
     @ViewById
     protected SeekBar seekBarProgress;
-    @ViewById
-    protected ImageView imageViewPauseIndicator;
-    @ViewById
-    protected ProgressBar progressBarWait;
+
     @ViewById
     protected LinearLayout linearLayoutMediaController;
     @ViewById
@@ -90,8 +87,6 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     protected void init() {
         holder = surface.getHolder();
         holder.addCallback(this);
-        surface.setOnClickListener(this);
-        surface.setClickable(false);
         Glide.with(this)
                 .load(extras.getString(THUMBNAILS))
                 .thumbnail(0.1f)
@@ -104,38 +99,18 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         try {
             player = new VideoStream(this);
             Log.d(TAG,extras.getString(URL));
+            player.setVideoController(videoTitle,linearLayoutMediaController,play);
             player.setSeekBar(seekBarProgress,textViewPlayed,textViewLength);
+            player.setUpVideoFrom(extras.getString(URL));
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (IllegalStateException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private void playVideo() {
-        if (extras.getString(URL).equals("VIDEO_URI")) {
-
-        } else {
-                    try {
-                        player.setUpVideoFrom(extras.getString(URL));
-                        player.setDisplay(surface, holder);
-                    } catch (IllegalArgumentException e) {
-                        showToast("Error while playing video");
-                        Log.i(TAG, "========== IllegalArgumentException ===========");
-                        e.printStackTrace();
-                    } catch (IllegalStateException e) {
-                        showToast("Error while playing video");
-                        Log.i(TAG, "========== IllegalStateException ===========");
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        showToast("Error while playing video. Please, check your network connection.");
-                        Log.i(TAG, "========== IOException ===========");
-                        e.printStackTrace();
-                    }
-                }
-
-
-    }
     private void showToast(final String string) {
         runOnUiThread(new Runnable() {
             public void run() {
@@ -154,9 +129,8 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (player!=null){
             player.release();
-        }
+
     }
 
 
@@ -182,8 +156,13 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
             Log.d(TAG,"Play");
             VideoThumbNails.setVisibility(View.GONE);
             if(!player.getmPlayer().isPlaying()){
-                playVideo();
+                player.setDisplay(surface, holder);
                 player.play();
+                play.setImageResource(R.mipmap.pause);
+                player.showMediaController();
+            } else if (player.getmPlayer().isPlaying()){
+                play.setImageResource(R.mipmap.play_button);
+                player.pause();
             }
 
         } catch (IllegalStateException e) {
@@ -192,12 +171,16 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
             e.printStackTrace();
         }
     }
-    @Override
-    public void onClick(View view) {
+
+    @Click
+    public void surface(){
+        Log.d(TAG,"Surface is clicked");
+
 
     }
 
-    @Override
+
+        @Override
     protected void onPause() {
         super.onPause();
         Log.d(TAG,"onPause()");

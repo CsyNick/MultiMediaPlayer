@@ -15,9 +15,9 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:textSize="16sp"
+            android:visibility="gone"
             android:layout_margin="20dp"
-            android:text="ㄅㄉˇㄎㄑㄋㄑㄇㄋㄎㄑㄇㄋㄎㄑ "
-            />
+            android:text="ㄅㄉˇㄎㄑㄋㄑㄇㄋㄎㄑㄇㄋㄎㄑ " />
         <SurfaceView
             android:id="@+id/surface"
             android:layout_gravity="center"
@@ -38,6 +38,7 @@
             android:layout_gravity="center"
             android:visibility="visible"
             android:src="@mipmap/play_button"/>
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_height="wrap_content"
@@ -45,6 +46,7 @@
             android:id="@+id/linearLayoutMediaController"
             android:paddingBottom="5dp"
             android:paddingTop="5dp"
+            android:visibility="gone"
             android:layout_gravity="bottom"
             android:gravity="center_vertical"
             android:background="#514E64">
@@ -96,25 +98,6 @@
 
         </LinearLayout>
 
-        <ProgressBar
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/progressBarWait"
-            android:visibility="gone">
-
-        </ProgressBar>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageViewPauseIndicator"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:src="@mipmap/play_button">
-
-        </ImageView>
 
     </FrameLayout>
 

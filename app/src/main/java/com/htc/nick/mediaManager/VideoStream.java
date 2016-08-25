@@ -11,8 +11,12 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.support.annotation.UiThread;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -34,7 +38,10 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
   private SurfaceView surfaceView;
   private TextView lblCurrentPosition = null;
   private TextView lblDuration = null;
+  private TextView videoTitle = null;
+  private LinearLayout linearLayoutMediaController = null;
   private Timer timer = null;
+  private ImageView play_button;
 
   public VideoStream(Context ctx) {
     this.ctx = ctx;
@@ -145,7 +152,7 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
    * Reset the seekbar.
    */
   private void reset() {
-    if (seekBar != null) {
+    if (seekBar != null && timer != null) {
       seekBar.setProgress(0);
       timer.cancel();
       lblCurrentPosition.setText(ctx.getResources().getString(R.string.empty_message));
@@ -191,7 +198,7 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
     if (STATUS != STATUS_STOPED) {
       mPlayer.stop();
       STATUS = STATUS_STOPED;
-
+      hideMediaController();
       reset();
       wakeLockRelease();
     }
@@ -296,6 +303,33 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
 
   public MediaPlayer getmPlayer() {
     return mPlayer;
+  }
+
+  public void  setVideoController(TextView videoTitle, LinearLayout linearLayoutMediaController, ImageView play_button){
+            this.videoTitle = videoTitle;
+            this.linearLayoutMediaController = linearLayoutMediaController;
+            this.play_button = play_button;
+  }
+  @UiThread
+  public void hideMediaController() {
+    if (isCheckMediaControllerOpened()){
+      videoTitle.setVisibility(View.GONE);
+      linearLayoutMediaController.setVisibility(View.GONE);
+      if(STATUS == STATUS_STOPED){
+        play_button.setImageResource(R.mipmap.play_button);
+      }
+
+    }
+  }
+  @UiThread
+  public void showMediaController() {
+    if (isCheckMediaControllerOpened()) {
+      videoTitle.setVisibility(View.VISIBLE);
+      linearLayoutMediaController.setVisibility(View.VISIBLE);
+    }
+  }
+  private boolean isCheckMediaControllerOpened(){
+    return videoTitle != null && linearLayoutMediaController !=null;
   }
 
 }
