@@ -111,15 +111,6 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         }
     }
 
-    private void showToast(final String string) {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                Toast.makeText(VideoPlayerActivity.this, string, Toast.LENGTH_LONG).show();
-                finish();
-            }
-        });
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -175,7 +166,11 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     @Click
     public void surface(){
         Log.d(TAG,"Surface is clicked");
-
+        if (player.isMediaControllerOpened()){
+            player.hideMediaController();
+        }else {
+            player.showMediaController();
+        }
 
     }
 

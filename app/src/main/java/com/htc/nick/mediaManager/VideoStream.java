@@ -30,7 +30,7 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
   private final int STATUS_STOPED = 1;
   private final int STATUS_PLAYING = 2;
   private final int STATUS_PAUSED = 3;
-
+  private boolean isMediaControllerOpened ;
   private Context ctx;
   private WakeLock wakeLock;
   private MediaPlayer mPlayer;
@@ -312,24 +312,34 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
   }
   @UiThread
   public void hideMediaController() {
-    if (isCheckMediaControllerOpened()){
+    if (checkMediaControllerValid()){
       videoTitle.setVisibility(View.GONE);
       linearLayoutMediaController.setVisibility(View.GONE);
+      isMediaControllerOpened = false;
       if(STATUS == STATUS_STOPED){
         play_button.setImageResource(R.mipmap.play_button);
+      } else if (STATUS == STATUS_PLAYING) {
+        play_button.setVisibility(View.GONE);
       }
 
     }
   }
   @UiThread
   public void showMediaController() {
-    if (isCheckMediaControllerOpened()) {
+    if (checkMediaControllerValid()) {
       videoTitle.setVisibility(View.VISIBLE);
       linearLayoutMediaController.setVisibility(View.VISIBLE);
+      isMediaControllerOpened = true;
+      if (STATUS == STATUS_PLAYING) {
+        play_button.setVisibility(View.VISIBLE);
+      }
     }
   }
-  private boolean isCheckMediaControllerOpened(){
+  private boolean checkMediaControllerValid(){
     return videoTitle != null && linearLayoutMediaController !=null;
   }
 
+  public boolean isMediaControllerOpened(){
+    return isMediaControllerOpened;
+  }
 }
