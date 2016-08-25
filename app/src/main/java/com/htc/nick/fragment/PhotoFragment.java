@@ -32,7 +32,7 @@ public class PhotoFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+
         photoManager = new PhotoManager(getContext());
     }
 
@@ -49,7 +49,7 @@ public class PhotoFragment extends Fragment {
                 ActivityCompat.requestPermissions(
                         getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
             } else {
-                adapter = new PhotoGridViewAdapter(getContext(),R.layout.photo_grid_item,photoManager.getPhotoList());
+                adapter = new PhotoGridViewAdapter(getActivity(),R.layout.photo_grid_item,photoManager.getPhotoList());
                 gridView.setAdapter(adapter);
             }
 

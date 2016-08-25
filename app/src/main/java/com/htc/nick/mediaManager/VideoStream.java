@@ -69,6 +69,8 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
     int screenHeight = ((Activity) ctx).getWindowManager().getDefaultDisplay().getHeight();
     float screenProportion = (float) screenWidth / (float) screenHeight;
 
+    if (surfaceView != null){
+
     // Get the SurfaceView layout parameters
     android.view.ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
 
@@ -82,6 +84,7 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
 
     // Commit the layout parameters
     surfaceView.setLayoutParams(lp);
+    }
   }
 
   /**
@@ -239,7 +242,10 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
    * Release the wakelock.
    */
   private void wakeLockRelease() {
-    wakeLock.release();
+    if (wakeLock!=null){
+      wakeLock.release();
+    }
+
   }
 
   /**
@@ -262,7 +268,9 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
 
   @Override
   public void onCompletion(MediaPlayer mp) {
-    stop();
+    if (STATUS >0){
+      stop();
+    }
   }
 
   @Override
@@ -328,10 +336,12 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
   public void showMediaController() {
     if (checkMediaControllerValid()) {
       videoTitle.setVisibility(View.VISIBLE);
-      linearLayoutMediaController.setVisibility(View.VISIBLE);
       isMediaControllerOpened = true;
       if (STATUS == STATUS_PLAYING) {
         play_button.setVisibility(View.VISIBLE);
+      }
+      if ( STATUS > 0 ){
+        linearLayoutMediaController.setVisibility(View.VISIBLE);
       }
     }
   }
@@ -341,5 +351,9 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
 
   public boolean isMediaControllerOpened(){
     return isMediaControllerOpened;
+  }
+
+  public void setSurface(SurfaceView surface) {
+    this.surfaceView = surface;
   }
 }

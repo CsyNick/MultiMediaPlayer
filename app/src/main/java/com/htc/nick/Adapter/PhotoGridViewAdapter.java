@@ -50,6 +50,7 @@ public class PhotoGridViewAdapter extends ArrayAdapter<PhotoItem> {
             holder = (ViewHolder) row.getTag();
         }
 
+
         Glide.with(context)
                 .load(data.get(position).getThumbnailUri())
                 .thumbnail(0.1f)
