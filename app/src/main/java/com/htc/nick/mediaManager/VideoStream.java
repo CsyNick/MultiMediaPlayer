@@ -258,8 +258,10 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
       public void run() {
         ((Activity) ctx).runOnUiThread(new Runnable() {
           public void run() {
-            seekBar.setProgress(mPlayer.getCurrentPosition());
-            setCurrentPosition(mPlayer.getCurrentPosition());
+            if (mPlayer != null){
+              seekBar.setProgress(mPlayer.getCurrentPosition());
+              setCurrentPosition(mPlayer.getCurrentPosition());
+            }
           }
         });
       }
