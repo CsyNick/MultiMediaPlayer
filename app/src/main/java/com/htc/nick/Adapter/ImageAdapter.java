@@ -9,7 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.htc.nick.CustomView.RecycleingImageView;
+import com.htc.nick.CustomView.RecyclingImageView;
 import com.htc.nick.Item.PhotoItem;
 
 import java.util.ArrayList;
@@ -94,7 +94,7 @@ public class ImageAdapter extends BaseAdapter {
         // Now handle the main ImageView thumbnails
         ImageView imageview;
         if (convertView == null) { // if it's not recycled, instantiate and initialize
-            imageview = new RecycleingImageView(mContext);
+            imageview = new RecyclingImageView(mContext);
             imageview.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageview.setLayoutParams(mImageViewLayoutParams);
         } else {

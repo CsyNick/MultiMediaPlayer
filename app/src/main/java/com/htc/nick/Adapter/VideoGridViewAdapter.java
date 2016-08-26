@@ -2,6 +2,7 @@ package com.htc.nick.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.htc.nick.Item.VideoItem;
 import com.htc.nick.multimediaplayer.R;
 
@@ -22,7 +24,7 @@ import java.util.List;
 public class VideoGridViewAdapter extends ArrayAdapter<VideoItem> {
     private Context context;
     private int layoutResourceId;
-    private ArrayList<VideoItem> data = new ArrayList<VideoItem>();
+    private ArrayList<VideoItem> data ;
 
 
     public VideoGridViewAdapter(Context context, int resource, ArrayList<VideoItem> videoItems) {
@@ -50,11 +52,12 @@ public class VideoGridViewAdapter extends ArrayAdapter<VideoItem> {
         }
 
 
-        VideoItem item = data.get(position);
+       final VideoItem item = data.get(position);
+//        holder.thumbnail.setImageBitmap(BitmapFactory.decodeFile(data.get(position).getThumbnail()));
         holder.fileName.setText(item.getFileName());
         Glide.with(context)
                 .load(data.get(position).getThumbnail())
-                .thumbnail(0.1f)
+                .thumbnail(0.5f)
                 .into(holder.thumbnail);
         return row;
 

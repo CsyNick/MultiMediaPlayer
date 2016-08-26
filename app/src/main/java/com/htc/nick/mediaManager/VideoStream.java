@@ -94,7 +94,6 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
     if (mPlayer.isPlaying()) {
       mPlayer.pause();
       STATUS = STATUS_PAUSED;
-
       wakeLockRelease();
     }
   }

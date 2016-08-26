@@ -40,7 +40,7 @@ public class FullScreenViewActivity extends BaseActivity<FullScreenView,FullScre
                 photoManager.getPhotoList());
 
         pager.setAdapter(adapter);
-
+        pager.setOffscreenPageLimit(3);
         // displaying selected image first
         pager.setCurrentItem(position);
     }

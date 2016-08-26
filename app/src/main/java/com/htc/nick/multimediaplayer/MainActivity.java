@@ -3,6 +3,7 @@ package com.htc.nick.multimediaplayer;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -25,9 +26,13 @@ import android.widget.TextView;
 
 import com.htc.nick.Base.Constants;
 import com.htc.nick.Page.SlideShowPlayer.SlideShowPlayerActivity;
+import com.htc.nick.fragment.ImageGridFragment;
 import com.htc.nick.fragment.SongFragment;
-import com.htc.nick.fragment.PhotoFragment;
+
 import com.htc.nick.fragment.VideoFragment;
+
+import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +43,12 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private FragmentTabHost mTabHost;
     private ViewPager mViewPager;
     private List<Fragment> mFragmentList;
+
+//    @Pref
+//    protected Preference preference;
     Menu menu;
-    private Class mClass[] = {SongFragment.class,VideoFragment.class,PhotoFragment.class};
-    private Fragment mFragment[] = {new SongFragment(),new VideoFragment(),new PhotoFragment()};
+    private Class mClass[] = {SongFragment.class,VideoFragment.class,ImageGridFragment.class};
+    private Fragment mFragment[] = {new SongFragment(),new VideoFragment(),new ImageGridFragment()};
     private String mTitles[] = {"Music","Video","Photo"};
     private int mImages[] = {
             R.mipmap.headset,
@@ -70,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
         mFragmentList = new ArrayList<>();
-
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
         mTabHost.getTabWidget().setDividerDrawable(null);
 
@@ -92,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 return mFragmentList.size();
             }
         });
+
     }
 
     private View getTabView(int index) {
@@ -107,11 +115,14 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     private void initEvent() {
-
+         SharedPreferences sharedPreferences  = getSharedPreferences("TabPosition",0);
+        mTabHost.setCurrentTab(sharedPreferences.getInt("TabPosition",0));
+        mViewPager.setCurrentItem(sharedPreferences.getInt("TabPosition",0));
         mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
                 mViewPager.setCurrentItem(mTabHost.getCurrentTab());
+
             }
         });
 
@@ -123,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
             @Override
             public void onPageSelected(int position) {
+                SharedPreferences sharedPreferences  = getSharedPreferences("TabPosition",0);
+                sharedPreferences.edit().putInt("TabPosition",position).commit();
                 mTabHost.setCurrentTab(position);
                 if(menu!=null) {
                     if (position == 2) {

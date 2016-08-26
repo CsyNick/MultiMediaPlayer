@@ -6,16 +6,16 @@ import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import com.htc.nick.BitmapDisplay.util.RecycleingBitmapDrawable;
+import com.htc.nick.BitmapDisplay.util.RecyclingBitmapDrawable;
 
 /**
  * Created by nickchung on 2016/8/18.
  */
-public class RecycleingImageView extends ImageView {
+public class RecyclingImageView extends ImageView {
 
-    public RecycleingImageView(Context context) {super(context);}
+    public RecyclingImageView(Context context) {super(context);}
 
-    public RecycleingImageView(Context context, AttributeSet attrs) {
+    public RecyclingImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -43,8 +43,8 @@ public class RecycleingImageView extends ImageView {
      *
      */
     private static void notifyDrawable(Drawable drawable, final boolean isDisplayed) {
-        if (drawable instanceof RecycleingBitmapDrawable) {
-            ((RecycleingBitmapDrawable)drawable).setIsDisplayed(isDisplayed);
+        if (drawable instanceof RecyclingBitmapDrawable) {
+            ((RecyclingBitmapDrawable)drawable).setIsDisplayed(isDisplayed);
         } else if (drawable instanceof LayerDrawable) {
             LayerDrawable layerDrawable = (LayerDrawable) drawable;
             for (int i = 0, z = layerDrawable.getNumberOfLayers(); i < z; i++) {

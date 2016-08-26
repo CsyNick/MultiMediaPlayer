@@ -61,7 +61,8 @@ public class FullScreenImageAdapter extends PagerAdapter {
         btnClose = (Button) viewLayout.findViewById(R.id.btnClose);
 		btnMoreInfo = (ImageButton) viewLayout.findViewById(R.id.moreInfo);
 		Glide.with(_activity)
-				.load(photoItem.getPath())
+				.load(photoItems.get(position).getPath())
+				.crossFade()
 				.into(imgDisplay);
 		      // close button click event
         btnClose.setOnClickListener(new View.OnClickListener() {			

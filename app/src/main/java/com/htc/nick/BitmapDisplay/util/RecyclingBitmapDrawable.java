@@ -9,7 +9,7 @@ import android.util.Log;
 /**
  * Created by nickchung on 2016/8/18.
  */
-public class RecycleingBitmapDrawable extends BitmapDrawable {
+public class RecyclingBitmapDrawable extends BitmapDrawable {
 
     static final String TAG = "CountingBitmapDrawable";
 
@@ -18,7 +18,7 @@ public class RecycleingBitmapDrawable extends BitmapDrawable {
 
     private boolean mHasBeenDisplayed;
 
-    public RecycleingBitmapDrawable(Resources res, Bitmap bitmap) { super(res, bitmap); }
+    public RecyclingBitmapDrawable(Resources res, Bitmap bitmap) { super(res, bitmap); }
 
     public void setIsCached(boolean isCached) {
 

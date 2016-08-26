@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -30,7 +31,8 @@
 
         <activity android:name="com.htc.nick.Page.MusicPlayer.MusicPlayerActivity_"
             android:label="MusicPlayer"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait">
 
         </activity>
         <activity android:name="com.htc.nick.Page.PhotoViewer.FullScreenViewActivity_"
