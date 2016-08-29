@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.htc.nick.Item.VideoItem;
 
@@ -27,9 +28,11 @@ public class VideoManager {
         videoList.clear();
         if (cursor.moveToFirst()) {
             do {
+
                 String name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME));
                 String videoPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
                 String thumbnailsUri = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Thumbnails.DATA));
+                Log.d("VideoManager",thumbnailsUri);
                 videoItem = new VideoItem(name,videoPath,thumbnailsUri);
                 videoList.add(videoItem);
             } while (cursor.moveToNext());

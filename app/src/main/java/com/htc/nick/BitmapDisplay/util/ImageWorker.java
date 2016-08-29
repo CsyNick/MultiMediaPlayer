@@ -268,7 +268,8 @@ public abstract class ImageWorker {
             mData = data;
             imageViewReference = new WeakReference<ImageView>(imageView);
             mOnImageLoadedListener = listener;
-        }
+
+       }
 
         /**
          * Background processing.

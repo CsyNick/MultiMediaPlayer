@@ -30,9 +30,8 @@ import com.htc.nick.fragment.ImageGridFragment;
 import com.htc.nick.fragment.SongFragment;
 
 import com.htc.nick.fragment.VideoFragment;
+import com.htc.nick.fragment.VideoGridFragment;
 
-import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +46,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
 //    @Pref
 //    protected Preference preference;
     Menu menu;
-    private Class mClass[] = {SongFragment.class,VideoFragment.class,ImageGridFragment.class};
-    private Fragment mFragment[] = {new SongFragment(),new VideoFragment(),new ImageGridFragment()};
+    private Class mClass[] = {SongFragment.class,VideoGridFragment.class,ImageGridFragment.class};
+    private Fragment mFragment[] = {new SongFragment(),new VideoGridFragment(),new ImageGridFragment()};
     private String mTitles[] = {"Music","Video","Photo"};
     private int mImages[] = {
             R.mipmap.headset,

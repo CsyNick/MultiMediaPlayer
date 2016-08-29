@@ -354,7 +354,4 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
     return isMediaControllerOpened;
   }
 
-  public void setSurface(SurfaceView surface) {
-    this.surfaceView = surface;
-  }
 }

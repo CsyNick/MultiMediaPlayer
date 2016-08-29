@@ -21,8 +21,12 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.BuildConfig;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -38,18 +42,24 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.htc.nick.Adapter.PhotoGridViewAdapter;
+import com.bumptech.glide.Glide;
 import com.htc.nick.Base.Constants;
+import com.htc.nick.BitmapDisplay.util.AsyncTask;
 import com.htc.nick.BitmapDisplay.util.ImageCache;
 import com.htc.nick.BitmapDisplay.util.ImageFetcher;
 import com.htc.nick.CustomView.RecyclingImageView;
 import com.htc.nick.Item.Images;
 import com.htc.nick.Item.PhotoItem;
+import com.htc.nick.Item.VideoItem;
 import com.htc.nick.Page.PhotoViewer.FullScreenViewActivity_;
+import com.htc.nick.Page.VideoPlayer.VideoPlayerActivity_;
 import com.htc.nick.mediaManager.PhotoManager;
+import com.htc.nick.mediaManager.VideoManager;
 import com.htc.nick.multimediaplayer.R;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
@@ -59,27 +69,29 @@ import java.util.ArrayList;
  * cache is retained over configuration changes like orientation change so the images are populated
  * quickly if, for example, the user rotates the device.
  */
-public class ImageGridFragment extends Fragment implements AdapterView.OnItemClickListener {
-    private static final String TAG = "ImageGridFragment";
-    private static final String IMAGE_CACHE_DIR = "thumbs";
+public class VideoGridFragment extends Fragment implements AdapterView.OnItemClickListener {
+    private static final String TAG = "ImageVideoFragment";
+    private static final String IMAGE_CACHE_DIR = "thumbs_video";
 
     private int mImageThumbSize;
     private int mImageThumbSpacing;
     private ImageAdapter mAdapter;
     private ImageFetcher mImageFetcher;
-    private PhotoManager photoManager;
-
+    private VideoManager videoManager;
+    private static final String URL = "url";
+    private static final String TITLE = "title";
+    private static final String THUMBNAILS = "thumbnails";
     /**
      * Empty constructor as per the Fragment documentation
      */
-    public ImageGridFragment() {
+    public VideoGridFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        photoManager = new PhotoManager(getActivity());
+        videoManager = new VideoManager(getContext());
         mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
@@ -90,7 +102,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             ActivityCompat.requestPermissions(
                     getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
         } else {
-            mAdapter = new ImageAdapter(getActivity(), photoManager.getPhotoList());
+            mAdapter = new ImageAdapter(getActivity(), videoManager.getVideoList());
         }
 
 
@@ -109,8 +121,8 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        final View v = inflater.inflate(R.layout.image_grid_fragment, container, false);
-        final GridView mGridView = (GridView) v.findViewById(R.id.gridView);
+        final View v = inflater.inflate(R.layout.fragment_video, container, false);
+        final GridView mGridView = (GridView) v.findViewById(R.id.videoGridView);
         mGridView.setAdapter(mAdapter);
         mGridView.setOnItemClickListener(this);
         mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -187,9 +199,14 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
     @TargetApi(VERSION_CODES.JELLY_BEAN)
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-        Intent i = new Intent(getContext(), FullScreenViewActivity_.class);
-        i.putExtra("position", position);
-        getContext().startActivity(i);
+//        Intent i = new Intent(getContext(), FullScreenViewActivity_.class);
+//        i.putExtra("position", position);
+//        getContext().startActivity(i);
+        Intent intent = new Intent( getContext() , VideoPlayerActivity_.class);
+        intent.putExtra(TITLE,videoManager.getVideoList().get(position).getFileName());
+        intent.putExtra	(URL, videoManager.getVideoList().get(position).getPath());
+        intent.putExtra(THUMBNAILS, videoManager.getVideoList().get(position).getThumbnail());
+        startActivity(intent);
 
     }
 
@@ -204,9 +221,9 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
         private int mNumColums = 0;
         private int mActionBarHeight = 0;
         private GridView.LayoutParams mImageViewLayoutParams;
-        private ArrayList<PhotoItem> mPhooItem;
+        private ArrayList<VideoItem> mVideoItems;
 
-        public ImageAdapter(Context context, ArrayList<PhotoItem> photoItems) {
+        public ImageAdapter(Context context, ArrayList<VideoItem> videoItems) {
             super();
             this.mContext = context;
             mImageViewLayoutParams = new GridView.LayoutParams(
@@ -219,7 +236,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
                         tv.data, context.getResources().getDisplayMetrics());
             }
 
-            this.mPhooItem = photoItems;
+            this.mVideoItems = videoItems;
 
         }
 
@@ -230,12 +247,12 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             if (getmNumColums() == 0) {
                 return 0;
             }
-            return mPhooItem.size() + mNumColums;
+            return mVideoItems.size() + mNumColums;
         }
 
         @Override
         public Object getItem(int pos) {
-            return pos < mNumColums ? 0 : mPhooItem.get(pos - mNumColums);
+            return pos < mNumColums ? 0 : mVideoItems.get(pos - mNumColums);
         }
 
         @Override
@@ -273,6 +290,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             }
             // Now handle the main ImageView thumbnails
             ImageView imageview;
+            TextView fileName;
             if (convertView == null) { // if it's not recycled, instantiate and initialize
                 imageview = new RecyclingImageView(mContext);
                 imageview.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -287,9 +305,18 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             }
             // Finally load the image asynchronously into the ImageView, this also takes care of
             // setting a placeholder image while the background thread runs
-           mImageFetcher.loadImage(mPhooItem.get(pos- mNumColums).getThumbnailUri()
-                   , imageview);
-            Log.d(TAG,mPhooItem.get(pos- mNumColums).getThumbnailUri());
+//           mImageFetcher.loadImage( ThumbnailUtils.createVideoThumbnail(mVideoItems.get(pos- mNumColums).getThumbnail(), MediaStore.Images.Thumbnails.MINI_KIND)
+//                   , imageview);
+//            imageview.setImageBitmap( ThumbnailUtils.createVideoThumbnail(mVideoItems.get(pos- mNumColums).getThumbnail(), MediaStore.Images.Thumbnails.MINI_KIND));
+            Log.d(TAG,mVideoItems.get(pos- mNumColums).getThumbnail());
+            if (imageview != null) {
+//                new ImageDownloaderTask(imageview).execute(mVideoItems.get(pos- mNumColums).getThumbnail());
+                Glide.with(getActivity())
+                        .load(mVideoItems.get(pos- mNumColums).getThumbnail())
+                        .thumbnail(0.5f)
+                        .into(imageview);
+            }
+
 //            mImageFetcher.loadImage(Images.imageThumbUrls[pos- mNumColums], imageview);
             return imageview;
 
@@ -315,6 +342,35 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             mImageFetcher.setImageSize(height);
             notifyDataSetChanged();
 
+        }
+    }
+
+    class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
+        private final WeakReference<ImageView> imageViewReference;
+
+        public ImageDownloaderTask(ImageView imageView) {
+            imageViewReference = new WeakReference<ImageView>(imageView);
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            return ThumbnailUtils.createVideoThumbnail(params[0], MediaStore.Images.Thumbnails.MINI_KIND);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (isCancelled()) {
+                bitmap = null;
+            }
+
+            if (imageViewReference != null) {
+                ImageView imageView = imageViewReference.get();
+                if (imageView != null) {
+                    if (bitmap != null) {
+                        imageView.setImageBitmap(bitmap);
+                    }
+                }
+            }
         }
     }
 }

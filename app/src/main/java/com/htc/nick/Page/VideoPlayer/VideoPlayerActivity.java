@@ -46,7 +46,7 @@ import org.androidannotations.annotations.ViewById;
 @EActivity(R.layout.activity_video_player)
 public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callback {
 
-    private static final String TAG = "VideoPlayer";
+    private static final String TAG = "Nick-VideoPlayer";
 //    private MediaPlayer player;
 
     private SurfaceHolder holder;
@@ -120,6 +120,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG,"onDestroy()");
             player.release();
 
     }
@@ -128,7 +129,6 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-
         Log.d(TAG,"surfaceCreated");
     }
 
@@ -179,13 +179,14 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     protected void onPause() {
         super.onPause();
         Log.d(TAG,"onPause()");
-        player.pause();
+            player.pause();
+            play.setImageResource(R.mipmap.play_button);
     }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-
+        Log.d(TAG,"onConfigurationChanged()");
             // Checks the orientation of the screen
             if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
