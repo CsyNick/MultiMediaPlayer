@@ -5,6 +5,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -81,6 +82,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         extras = getIntent().getExtras();
+
     }
 
     @AfterViews
@@ -98,6 +100,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
         try {
             player = new VideoStream(this);
+
             Log.d(TAG,extras.getString(URL));
             player.setVideoController(videoTitle,linearLayoutMediaController,play);
             player.setSeekBar(seekBarProgress,textViewPlayed,textViewLength);

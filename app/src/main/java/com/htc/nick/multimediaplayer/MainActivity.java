@@ -28,10 +28,7 @@ import com.htc.nick.Base.Constants;
 import com.htc.nick.Page.SlideShowPlayer.SlideShowPlayerActivity;
 import com.htc.nick.fragment.ImageGridFragment;
 import com.htc.nick.fragment.SongFragment;
-
-import com.htc.nick.fragment.VideoFragment;
 import com.htc.nick.fragment.VideoGridFragment;
-
 
 import java.util.ArrayList;
 import java.util.List;

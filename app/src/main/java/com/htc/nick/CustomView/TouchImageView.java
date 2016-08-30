@@ -231,4 +231,14 @@ public class TouchImageView extends ImageView {
 		}
 		fixTrans();
 	}
+	public boolean canScrollHor(int direction) {
+		final int offset = computeHorizontalScrollOffset();
+		final int range = computeHorizontalScrollRange() - computeHorizontalScrollExtent();
+		if (range == 0) return false;
+		if (direction < 0) {
+			return offset > 0;
+		} else {
+			return offset < range - 1;
+		}
+	}
 }

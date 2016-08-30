@@ -12,6 +12,7 @@ import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.support.annotation.UiThread;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -42,7 +43,7 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
   private LinearLayout linearLayoutMediaController = null;
   private Timer timer = null;
   private ImageView play_button;
-
+  private static VideoStream sInstance;
   public VideoStream(Context ctx) {
     this.ctx = ctx;
 
@@ -53,7 +54,12 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
     PowerManager powerManager = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
     wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyMediaPlayer");
   }
-
+  public static VideoStream getInstance(Context context) {
+    if (sInstance == null) {
+      sInstance = new VideoStream(context);
+    }
+    return sInstance;
+  }
   /**
    * Sets up the surface dimensions to display
    * the video on it.
@@ -129,12 +135,8 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
   public void setUpVideoFrom(String source) throws IllegalArgumentException, IllegalStateException, IOException {
     mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
-//		if (source.contains("http"))
     mPlayer.setDataSource(source);
-//		else {
-//			Uri uri = Uri.parse(source);
-//			mPlayer.setDataSource(ctx, uri);
-//		}
+
 
   }
 
@@ -242,6 +244,7 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
    */
   private void wakeLockRelease() {
     if (wakeLock!=null){
+      if (wakeLock.isHeld())
       wakeLock.release();
     }
 
@@ -269,6 +272,7 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
 
   @Override
   public void onCompletion(MediaPlayer mp) {
+    Log.d("Nick-VideoPlayer","onCompletion()");
     if (STATUS >0){
       stop();
     }

@@ -27,4 +27,7 @@
         <item name="android:listSelector">@drawable/photogrid_list_selector</item>
     </style>
 
+    <style name="AppTheme.Gallery" parent="Theme.AppCompat.NoActionBar">
+    </style>
+
 </resources>

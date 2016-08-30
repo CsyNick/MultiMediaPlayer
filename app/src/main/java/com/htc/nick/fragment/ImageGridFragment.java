@@ -39,14 +39,12 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.htc.nick.Adapter.PhotoGridViewAdapter;
 import com.htc.nick.Base.Constants;
 import com.htc.nick.BitmapDisplay.util.ImageCache;
 import com.htc.nick.BitmapDisplay.util.ImageFetcher;
 import com.htc.nick.CustomView.RecyclingImageView;
-import com.htc.nick.Item.Images;
 import com.htc.nick.Item.PhotoItem;
-import com.htc.nick.Page.PhotoViewer.FullScreenViewActivity_;
+import com.htc.nick.Page.PhotoViewer.GalleryActivity;
 import com.htc.nick.mediaManager.PhotoManager;
 import com.htc.nick.multimediaplayer.R;
 
@@ -68,7 +66,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
     private ImageAdapter mAdapter;
     private ImageFetcher mImageFetcher;
     private PhotoManager photoManager;
-
+    private ArrayList<String> photoList;
     /**
      * Empty constructor as per the Fragment documentation
      */
@@ -90,6 +88,10 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             ActivityCompat.requestPermissions(
                     getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
         } else {
+            photoList = new ArrayList<>();
+            for (PhotoItem itemPath : photoManager.getPhotoList()){
+                photoList.add(itemPath.getPath());
+            }
             mAdapter = new ImageAdapter(getActivity(), photoManager.getPhotoList());
         }
 
@@ -187,8 +189,9 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
     @TargetApi(VERSION_CODES.JELLY_BEAN)
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-        Intent i = new Intent(getContext(), FullScreenViewActivity_.class);
+        Intent i = new Intent(getContext(), GalleryActivity.class);
         i.putExtra("position", position);
+        i.putStringArrayListExtra(GalleryActivity.EXTRA_NAME, photoList);
         getContext().startActivity(i);
 
     }

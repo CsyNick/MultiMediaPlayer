@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -50,12 +49,8 @@ import com.htc.nick.BitmapDisplay.util.AsyncTask;
 import com.htc.nick.BitmapDisplay.util.ImageCache;
 import com.htc.nick.BitmapDisplay.util.ImageFetcher;
 import com.htc.nick.CustomView.RecyclingImageView;
-import com.htc.nick.Item.Images;
-import com.htc.nick.Item.PhotoItem;
 import com.htc.nick.Item.VideoItem;
-import com.htc.nick.Page.PhotoViewer.FullScreenViewActivity_;
 import com.htc.nick.Page.VideoPlayer.VideoPlayerActivity_;
-import com.htc.nick.mediaManager.PhotoManager;
 import com.htc.nick.mediaManager.VideoManager;
 import com.htc.nick.multimediaplayer.R;
 
@@ -199,9 +194,6 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
     @TargetApi(VERSION_CODES.JELLY_BEAN)
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-//        Intent i = new Intent(getContext(), FullScreenViewActivity_.class);
-//        i.putExtra("position", position);
-//        getContext().startActivity(i);
         Intent intent = new Intent( getContext() , VideoPlayerActivity_.class);
         intent.putExtra(TITLE,videoManager.getVideoList().get(position).getFileName());
         intent.putExtra	(URL, videoManager.getVideoList().get(position).getPath());
@@ -247,7 +239,7 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
             if (getmNumColums() == 0) {
                 return 0;
             }
-            return mVideoItems.size() + mNumColums;
+            return mVideoItems.size();
         }
 
         @Override
