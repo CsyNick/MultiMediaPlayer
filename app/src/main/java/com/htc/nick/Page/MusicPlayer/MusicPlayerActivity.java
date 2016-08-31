@@ -1,5 +1,10 @@
 package com.htc.nick.Page.MusicPlayer;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,7 +37,7 @@ import java.util.Random;
 @EActivity(R.layout.activity_music_player)
 public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlayerPresenter> implements MusicPlayerView ,
         MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
-
+    private static final String TAG = "MusicPlayerActivity";
     private MediaPlayer mp;
     private SongManager songManager;
     private Handler mHandler = new Handler();
@@ -64,12 +69,66 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
     @ViewById
     protected TextView songCurrentDurationLabel;
 
+
+    private boolean mAudioFocusGranted = false;
+    private boolean mAudioIsPlaying = false;
+    private MediaPlayer mPlayer;
+    private AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener;
+    private BroadcastReceiver mIntentReceiver;
+    private boolean mReceiverRegistered = false;
+
+    private static final String CMD_NAME = "command";
+    private static final String CMD_PAUSE = "pause";
+    private static final String CMD_STOP = "pause";
+    private static final String CMD_PLAY = "play";
+
+    // Jellybean
+    private static String SERVICE_CMD = "com.sec.android.app.music.musicservicecommand";
+    private static String PAUSE_SERVICE_CMD = "com.sec.android.app.music.musicservicecommand.pause";
+    private static String PLAY_SERVICE_CMD = "com.sec.android.app.music.musicservicecommand.play";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mp = new MediaPlayer();
         utils = new Utilities();
         songManager = new SongManager(this);
+
+
+        mOnAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+
+            @Override
+            public void onAudioFocusChange(int focusChange) {
+                switch (focusChange) {
+                    case AudioManager.AUDIOFOCUS_GAIN:
+                        Log.i(TAG, "AUDIOFOCUS_GAIN");
+                        play();
+                        break;
+                    case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
+                        Log.i(TAG, "AUDIOFOCUS_GAIN_TRANSIENT");
+                        break;
+                    case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
+                        Log.i(TAG, "AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK");
+                        break;
+                    case AudioManager.AUDIOFOCUS_LOSS:
+                        Log.e(TAG, "AUDIOFOCUS_LOSS");
+                        pause();
+                        break;
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                        Log.e(TAG, "AUDIOFOCUS_LOSS_TRANSIENT");
+                        pause();
+                        break;
+                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                        Log.e(TAG, "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
+                        break;
+                    case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
+                        Log.e(TAG, "AUDIOFOCUS_REQUEST_FAILED");
+                        break;
+                    default:
+                        //
+                }
+            }
+        };
     }
 
     @AfterViews
@@ -86,12 +145,44 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
     @Click
     @Override
     public void play() {
-        if(mp.isPlaying()&& mp!=null){
-                mp.pause();
-                play.setImageResource(R.drawable.btn_play);
-        }else{
+
+            if (mp.isPlaying() && mp != null) {
+                pause();
+            } else {
+
+                // 1. Acquire audio focus
+                if (!mAudioFocusGranted && requestAudioFocus()) {
+                    // 2. Kill off any other play back sources
+                    forceMusicStop();
+                    // 3. Register broadcast receiver for player intents
+                    setupBroadcastReceiver();
+                }
+
                 mp.start();
+                mAudioIsPlaying = true;
                 play.setImageResource(R.drawable.btn_pause);
+            }
+
+
+
+    }
+
+    private void pause(){
+
+            mp.pause();
+            play.setImageResource(R.drawable.btn_play);
+
+
+    }
+
+    public void stop() {
+        // 1. Stop play back
+        if (mAudioFocusGranted && mAudioIsPlaying) {
+            mPlayer.stop();
+            mPlayer = null;
+            mAudioIsPlaying = false;
+            // 2. Give up audio focus
+            abandonAudioFocus();
         }
     }
 
@@ -269,5 +360,79 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
         super.onDestroy();
         mHandler.removeCallbacks(mUpdateTimeTask);
         mp.release();
+    }
+
+    private boolean requestAudioFocus() {
+        if (!mAudioFocusGranted) {
+            AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+            // Request audio focus for play back
+            int result = am.requestAudioFocus(mOnAudioFocusChangeListener,
+                    // Use the music stream.
+                    AudioManager.STREAM_MUSIC,
+                    // Request permanent focus.
+                    AudioManager.AUDIOFOCUS_GAIN);
+
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                mAudioFocusGranted = true;
+            } else {
+                // FAILED
+                Log.e(TAG,
+                        ">>>>>>>>>>>>> FAILED TO GET AUDIO FOCUS <<<<<<<<<<<<<<<<<<<<<<<<");
+            }
+        }
+        return mAudioFocusGranted;
+    }
+
+    private void abandonAudioFocus() {
+        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        int result = am.abandonAudioFocus(mOnAudioFocusChangeListener);
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mAudioFocusGranted = false;
+        } else {
+            // FAILED
+            Log.e(TAG,
+                    ">>>>>>>>>>>>> FAILED TO ABANDON AUDIO FOCUS <<<<<<<<<<<<<<<<<<<<<<<<");
+        }
+        mOnAudioFocusChangeListener = null;
+    }
+
+    private void setupBroadcastReceiver() {
+        mIntentReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                String cmd = intent.getStringExtra(CMD_NAME);
+                Log.i(TAG, "mIntentReceiver.onReceive " + action + " / " + cmd);
+
+                if (PAUSE_SERVICE_CMD.equals(action)
+                        || (SERVICE_CMD.equals(action) && CMD_PAUSE.equals(cmd))) {
+                    play();
+                }
+
+                if (PLAY_SERVICE_CMD.equals(action)
+                        || (SERVICE_CMD.equals(action) && CMD_PLAY.equals(cmd))) {
+                    pause();
+                }
+            }
+        };
+
+        // Do the right thing when something else tries to play
+        if (!mReceiverRegistered) {
+            IntentFilter commandFilter = new IntentFilter();
+            commandFilter.addAction(SERVICE_CMD);
+            commandFilter.addAction(PAUSE_SERVICE_CMD);
+            commandFilter.addAction(PLAY_SERVICE_CMD);
+            registerReceiver(mIntentReceiver, commandFilter);
+            mReceiverRegistered = true;
+        }
+    }
+
+    private void forceMusicStop() {
+        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        if (am.isMusicActive()) {
+            Intent intentToStop = new Intent(SERVICE_CMD);
+            intentToStop.putExtra(CMD_NAME, CMD_STOP);
+            sendBroadcast(intentToStop);
+        }
     }
 }
