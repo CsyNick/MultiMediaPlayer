@@ -376,6 +376,7 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
         super.onDestroy();
         mHandler.removeCallbacks(mUpdateTimeTask);
         mp.release();
+        unregisterReceiver(mIntentReceiver);
         abandonAudioFocus();
 
     }

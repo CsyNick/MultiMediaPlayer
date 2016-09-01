@@ -100,6 +100,7 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
     if (mPlayer.isPlaying()) {
       mPlayer.pause();
       STATUS = STATUS_PAUSED;
+      showMediaController();
       wakeLockRelease();
     }
   }
@@ -342,7 +343,7 @@ public class VideoStream implements MediaPlayer.OnCompletionListener, MediaPlaye
     if (checkMediaControllerValid()) {
       videoTitle.setVisibility(View.VISIBLE);
       isMediaControllerOpened = true;
-      if (STATUS == STATUS_PLAYING) {
+      if (STATUS == STATUS_PLAYING || STATUS == STATUS_PAUSED) {
         play_button.setVisibility(View.VISIBLE);
       }
       if ( STATUS > 0 ){

@@ -99,6 +99,14 @@
         </LinearLayout>
 
 
+        <ImageButton
+            android:id="@+id/btn_close"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="top|right"
+            android:src="@mipmap/ic_close_grey600_24dp"
+            android:scaleType="fitCenter"
+            style="@style/Widget.AppCompat.ActionButton" />
 
     </FrameLayout>
 

@@ -25,6 +25,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
@@ -76,6 +77,9 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     @ViewById
     protected ImageView VideoThumbNails;
+    @ViewById
+    protected ImageButton btn_close;
+
     private static final String URL = "url";
     private static final String TITLE = "title";
     private static final String THUMBNAILS = "thumbnails";
@@ -186,7 +190,11 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         super.onDestroy();
         Log.d(TAG,"onDestroy()");
             player.release();
+        if (mIntentReceiver!=null){
+            unregisterReceiver(mIntentReceiver);
+        }
         abandonAudioFocus();
+
 
     }
 
@@ -206,6 +214,12 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
     }
 
+    @Click
+    public void btn_close(){
+
+        finish();
+        abandonAudioFocus();
+    }
     @Click
     public void play(){
         try {
@@ -256,6 +270,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         Log.d(TAG,"onPause()");
             player.pause();
             play.setImageResource(R.mipmap.play_button);
+            player.hideMediaController();
     }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
