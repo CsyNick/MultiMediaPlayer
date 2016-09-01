@@ -28,7 +28,7 @@ import java.util.HashMap;
  */
 
 public class SongFragment extends Fragment {
-
+    private static final String TAG = "SongFragment";
     private View mRootView;
     private ArrayList<HashMap<String,String>> mSongList;
     ArrayList<String> songsListData;
@@ -44,6 +44,27 @@ public class SongFragment extends Fragment {
         songManager = new SongManager(getContext());
         songsListData = new ArrayList<>();
         songsListPath = new ArrayList<>();
+
+        int permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
+        } else {
+            mSongList = songManager.getSongList();
+            if (songsListData.size()==0) {
+                for (int i = 0; i < mSongList.size(); i++) {
+
+                    HashMap<String, String> song = mSongList.get(i);
+
+                    songsListData.add(song.get("songTitle"));
+                    songsListPath.add(song.get("songPath"));
+
+                }
+            }
+            mAdapter = new ArrayAdapter<>(getContext(),
+                    android.R.layout.simple_list_item_1, songsListData);
+        }
     }
 
     @Nullable
@@ -54,43 +75,6 @@ public class SongFragment extends Fragment {
             mRootView = inflater.inflate(R.layout.fragment_audio, container, false);
             audioListView = (ListView) mRootView.findViewById(R.id.audioList);
         }
-        ViewGroup parent = (ViewGroup) mRootView.getParent();
-        if (parent != null) {
-            parent.removeView(mRootView);
-        }
-        return mRootView;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        int permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
-        } else {
-            init();
-        }
-
-    }
-
-    private void init(){
-
-        mSongList = songManager.getSongList();
-        if (songsListData.size()==0) {
-            for (int i = 0; i < mSongList.size(); i++) {
-
-                HashMap<String, String> song = mSongList.get(i);
-
-                songsListData.add(song.get("songTitle"));
-                songsListPath.add(song.get("songPath"));
-
-            }
-        }
-         mAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_list_item_1, songsListData);
         audioListView.setAdapter(mAdapter);
 
         audioListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -101,6 +85,24 @@ public class SongFragment extends Fragment {
 
             }
         });
+        ViewGroup parent = (ViewGroup) mRootView.getParent();
+        if (parent != null) {
+            parent.removeView(mRootView);
+        }
+        return mRootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("NickFragment","onResume-"+TAG);
+
+    }
+
+    private void init(){
+
+
+
 
     }
 

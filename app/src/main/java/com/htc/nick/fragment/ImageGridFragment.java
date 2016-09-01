@@ -77,7 +77,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        photoManager = new PhotoManager(getActivity());
+        photoManager = new PhotoManager(getContext());
         mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
@@ -88,11 +88,17 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             ActivityCompat.requestPermissions(
                     getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
         } else {
-            photoList = new ArrayList<>();
-            for (PhotoItem itemPath : photoManager.getPhotoList()){
-                photoList.add(itemPath.getPath());
-            }
-            mAdapter = new ImageAdapter(getActivity(), photoManager.getPhotoList());
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    photoList = new ArrayList<>();
+                    for (PhotoItem itemPath : photoManager.getPhotoList()){
+                        photoList.add(itemPath.getPath());
+                    }
+                    mAdapter = new ImageAdapter(getActivity(), photoManager.getPhotoList());
+                }
+            });
+
         }
 
 
@@ -168,6 +174,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
     @Override
     public void onResume() {
         super.onResume();
+        Log.d("NickFragment","onResume-"+TAG);
         mImageFetcher.setExitTasksEarly(false);
         mAdapter.notifyDataSetChanged();
     }

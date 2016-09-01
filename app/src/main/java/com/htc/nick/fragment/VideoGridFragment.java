@@ -97,7 +97,13 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
             ActivityCompat.requestPermissions(
                     getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
         } else {
-            mAdapter = new ImageAdapter(getActivity(), videoManager.getVideoList());
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mAdapter = new ImageAdapter(getActivity(), videoManager.getVideoList());
+                }
+            });
+
         }
 
 
@@ -173,6 +179,7 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
     @Override
     public void onResume() {
         super.onResume();
+        Log.d("NickFragment","onResume-"+TAG);
         mImageFetcher.setExitTasksEarly(false);
         mAdapter.notifyDataSetChanged();
     }

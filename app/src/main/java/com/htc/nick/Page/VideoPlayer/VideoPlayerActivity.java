@@ -5,7 +5,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -78,11 +81,69 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
     private static final String THUMBNAILS = "thumbnails";
     private VideoStream player;
 
+
+    private boolean mAudioFocusGranted = false;
+    private boolean mAudioIsPlaying = false;;
+    private AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener;
+    private BroadcastReceiver mIntentReceiver;
+    private boolean mReceiverRegistered = false;
+
+    private static final String CMD_NAME = "command";
+    private static final String CMD_PAUSE = "pause";
+    private static final String CMD_STOP = "pause";
+    private static final String CMD_PLAY = "play";
+
+    // Jellybean
+    private static String SERVICE_CMD = "com.sec.android.app.music.musicservicecommand";
+    private static String PAUSE_SERVICE_CMD = "com.sec.android.app.music.musicservicecommand.pause";
+    private static String PLAY_SERVICE_CMD = "com.sec.android.app.music.musicservicecommand.play";
+
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         extras = getIntent().getExtras();
 
+
+        runOnUiThread(new Runnable() {
+                          @Override
+                          public void run() {
+                              mOnAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+
+                                  @Override
+                                  public void onAudioFocusChange(int focusChange) {
+                                      switch (focusChange) {
+                                          case AudioManager.AUDIOFOCUS_GAIN:
+                                              Log.i(TAG, "AUDIOFOCUS_GAIN");
+                                              play();
+                                              break;
+                                          case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
+                                              Log.i(TAG, "AUDIOFOCUS_GAIN_TRANSIENT");
+                                              break;
+                                          case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
+                                              Log.i(TAG, "AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK");
+                                              break;
+                                          case AudioManager.AUDIOFOCUS_LOSS:
+                                              Log.e(TAG, "AUDIOFOCUS_LOSS");
+                                              pause();
+                                              break;
+                                          case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                                              Log.e(TAG, "AUDIOFOCUS_LOSS_TRANSIENT");
+                                              pause();
+                                              break;
+                                          case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                                              Log.e(TAG, "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
+                                              break;
+                                          case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
+                                              Log.e(TAG, "AUDIOFOCUS_REQUEST_FAILED");
+                                              break;
+                                          default:
+                                              //
+                                      }
+                                  }
+                              };
+                          }
+                      }
+        );
     }
 
     @AfterViews
@@ -125,6 +186,7 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         super.onDestroy();
         Log.d(TAG,"onDestroy()");
             player.release();
+        abandonAudioFocus();
 
     }
 
@@ -150,13 +212,19 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
             Log.d(TAG,"Play");
             VideoThumbNails.setVisibility(View.GONE);
             if(!player.getmPlayer().isPlaying()){
+                // 1. Acquire audio focus
+                if (!mAudioFocusGranted && requestAudioFocus()) {
+                    // 2. Kill off any other play back sources
+                    forceMusicStop();
+                    // 3. Register broadcast receiver for player intents
+                    setupBroadcastReceiver();
+                }
                 player.setDisplay(surface, holder);
                 player.play();
                 play.setImageResource(R.mipmap.pause);
                 player.showMediaController();
             } else if (player.getmPlayer().isPlaying()){
-                play.setImageResource(R.mipmap.play_button);
-                player.pause();
+                pause();
             }
 
         } catch (IllegalStateException e) {
@@ -166,6 +234,10 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
         }
     }
 
+    private void pause(){
+        play.setImageResource(R.mipmap.play_button);
+        player.pause();
+    }
     @Click
     public void surface(){
         Log.d(TAG,"Surface is clicked");
@@ -202,4 +274,77 @@ public class VideoPlayerActivity extends Activity implements SurfaceHolder.Callb
 
     }
 
+    private boolean requestAudioFocus() {
+        if (!mAudioFocusGranted) {
+            AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+            // Request audio focus for play back
+            int result = am.requestAudioFocus(mOnAudioFocusChangeListener,
+                    // Use the music stream.
+                    AudioManager.STREAM_MUSIC,
+                    // Request permanent focus.
+                    AudioManager.AUDIOFOCUS_GAIN);
+
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                mAudioFocusGranted = true;
+            } else {
+                // FAILED
+                Log.e(TAG,
+                        ">>>>>>>>>>>>> FAILED TO GET AUDIO FOCUS <<<<<<<<<<<<<<<<<<<<<<<<");
+            }
+        }
+        return mAudioFocusGranted;
+    }
+
+    private void abandonAudioFocus() {
+        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        int result = am.abandonAudioFocus(mOnAudioFocusChangeListener);
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mAudioFocusGranted = false;
+        } else {
+            // FAILED
+            Log.e(TAG,
+                    ">>>>>>>>>>>>> FAILED TO ABANDON AUDIO FOCUS <<<<<<<<<<<<<<<<<<<<<<<<");
+        }
+        mOnAudioFocusChangeListener = null;
+    }
+
+    private void setupBroadcastReceiver() {
+        mIntentReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                String cmd = intent.getStringExtra(CMD_NAME);
+                Log.i(TAG, "mIntentReceiver.onReceive " + action + " / " + cmd);
+
+                if (PAUSE_SERVICE_CMD.equals(action)
+                        || (SERVICE_CMD.equals(action) && CMD_PAUSE.equals(cmd))) {
+                    play();
+                }
+
+                if (PLAY_SERVICE_CMD.equals(action)
+                        || (SERVICE_CMD.equals(action) && CMD_PLAY.equals(cmd))) {
+                    pause();
+                }
+            }
+        };
+
+        // Do the right thing when something else tries to play
+        if (!mReceiverRegistered) {
+            IntentFilter commandFilter = new IntentFilter();
+            commandFilter.addAction(SERVICE_CMD);
+            commandFilter.addAction(PAUSE_SERVICE_CMD);
+            commandFilter.addAction(PLAY_SERVICE_CMD);
+            registerReceiver(mIntentReceiver, commandFilter);
+            mReceiverRegistered = true;
+        }
+    }
+
+    private void forceMusicStop() {
+        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        if (am.isMusicActive()) {
+            Intent intentToStop = new Intent(SERVICE_CMD);
+            intentToStop.putExtra(CMD_NAME, CMD_STOP);
+            sendBroadcast(intentToStop);
+        }
+    }
 }

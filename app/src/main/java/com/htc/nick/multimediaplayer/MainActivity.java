@@ -10,8 +10,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +32,7 @@ import com.htc.nick.fragment.ImageGridFragment;
 import com.htc.nick.fragment.SongFragment;
 import com.htc.nick.fragment.VideoGridFragment;
 import com.htc.nick.logger.Log;
+import com.viewpagerindicator.TabPageIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private FragmentTabHost mTabHost;
     private ViewPager mViewPager;
+    private TabPageIndicator indicator;
     private List<Fragment> mFragmentList;
 
 //    @Pref
@@ -96,6 +100,18 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 return mFragmentList.size();
             }
         });
+
+    }
+    private void setupViewPager() {
+
+        //setup viewpager
+        mViewPager = (ViewPager) findViewById(R.id.viwepager);
+        mViewPager.setAdapter(new MainActivityViewPagerAdapter(getSupportFragmentManager()));
+        mViewPager.setCurrentItem(0);
+
+        //setup indicator
+        indicator = (TabPageIndicator) findViewById(R.id.title);
+        indicator.setViewPager(mViewPager);
 
     }
 
@@ -178,6 +194,27 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
 
+        }
+    }
+
+    public class MainActivityViewPagerAdapter extends FragmentPagerAdapter {
+        public MainActivityViewPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mTitles.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mTitles[position];
         }
     }
 }
