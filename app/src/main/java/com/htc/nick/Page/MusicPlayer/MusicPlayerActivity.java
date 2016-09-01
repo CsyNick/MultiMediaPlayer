@@ -277,6 +277,14 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
     public void playSong(int index) {
 
             try {
+                // 1. Acquire audio focus
+                if (!mAudioFocusGranted && requestAudioFocus()) {
+                    // 2. Kill off any other play back sources
+                    forceMusicStop();
+                    // 3. Register broadcast receiver for player intents
+                    setupBroadcastReceiver();
+                }
+
                 mp.reset();
                 mp.setDataSource(songManager.getSongList().get(index).get("songPath"));
                 mp.prepare();
