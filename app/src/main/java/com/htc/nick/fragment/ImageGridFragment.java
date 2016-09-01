@@ -199,6 +199,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
         Intent i = new Intent(getContext(), GalleryActivity.class);
         i.putExtra("position", position-3);
         i.putStringArrayListExtra(GalleryActivity.EXTRA_NAME, photoList);
+        i.putParcelableArrayListExtra(GalleryActivity.EXTRA_NAME,photoManager.getPhotoList());
         getContext().startActivity(i);
 
     }

@@ -22,13 +22,18 @@
         android:src="@mipmap/ic_close_grey600_24dp"
         android:scaleType="fitCenter"
         style="@style/Widget.AppCompat.ActionButton" />
-    <!--<LinearLayout-->
-        <!--android:orientation="horizontal"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:id="@+id/taskLayout">-->
 
-
-    <!--</LinearLayout>-->
+    <LinearLayout
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="72dp">
+        <ImageView
+            android:id="@+id/moreInfo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:src="@mipmap/moreinfo"/>
+    </LinearLayout>
 
 </FrameLayout>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +16,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -38,12 +41,14 @@ public class GalleryActivity extends AppCompatActivity {
     public static final String EXTRA_NAME = "images";
 
     private GalleryPagerAdapter _adapter;
-    private ArrayList<String> _images;
+    private ArrayList<PhotoItem> _images;
     @InjectView(R.id.pager)
     ViewPager _pager;
     @InjectView(R.id.btn_close)
     ImageButton _closeButton;
 
+    @InjectView(R.id.moreInfo)
+    ImageView moreInfo;
 
     private boolean isOpenSystemUI = false;
     View decorView;
@@ -56,7 +61,7 @@ public class GalleryActivity extends AppCompatActivity {
          decorView = getWindow().getDecorView();
         int position =  getIntent().getIntExtra("position", 0);
          Log.d(TAG,position+"..");
-        _images = (ArrayList<String>) getIntent().getSerializableExtra(EXTRA_NAME);
+        _images =  getIntent().getParcelableArrayListExtra(EXTRA_NAME);
         Assert.assertNotNull(_images);
         hideSystemUI();
         _adapter = new GalleryPagerAdapter(this);
@@ -112,6 +117,14 @@ public class GalleryActivity extends AppCompatActivity {
 
             final SubsamplingScaleImageView imageView =
                     (SubsamplingScaleImageView) itemView.findViewById(R.id.image);
+            moreInfo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new MaterialDialog.Builder(GalleryActivity.this).title("File Name: "+_images.get(position).getName())
+                            .content("Resolution: "+_images.get(position).getResolution()+"\n" +
+                                    "Size: "+_images.get(position).getSize()+"mb"+"\n"+ "Date: "+_images.get(position).getDate()).show();
+                }
+            });
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -126,7 +139,7 @@ public class GalleryActivity extends AppCompatActivity {
                 }
             });
             Glide.with(_context)
-                    .load(_images.get(position))
+                    .load(_images.get(position).getThumbnailUri())
                     .asBitmap()
                     .override(720, 240)
                     .into(new SimpleTarget<Bitmap>() {
@@ -157,11 +170,13 @@ public class GalleryActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        moreInfo.setVisibility(View.GONE);
     }
 
     // This snippet shows the system bars. It does this by removing all the flags
 // except for the ones that make the content appear under the system bars.
     private void showSystemUI() {
+        moreInfo.setVisibility(View.VISIBLE);
         decorView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION

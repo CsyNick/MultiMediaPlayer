@@ -1,9 +1,12 @@
 package com.htc.nick.Item;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by nick on 8/2/16.
  */
-public class PhotoItem {
+public class PhotoItem implements Parcelable {
     private String name;
     private String path;
     private String thumbnailUri;
@@ -31,6 +34,30 @@ public class PhotoItem {
         this.size = size / 1024;
     }
 
+
+    protected PhotoItem(Parcel in) {
+        name = in.readString();
+        path = in.readString();
+        thumbnailUri = in.readString();
+        description = in.readString();
+        date = in.readString();
+        contentType = in.readString();
+        width = in.readString();
+        height = in.readString();
+        size = in.readLong();
+    }
+
+    public static final Creator<PhotoItem> CREATOR = new Creator<PhotoItem>() {
+        @Override
+        public PhotoItem createFromParcel(Parcel in) {
+            return new PhotoItem(in);
+        }
+
+        @Override
+        public PhotoItem[] newArray(int size) {
+            return new PhotoItem[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -108,5 +135,23 @@ public class PhotoItem {
 
     public String getResolution(){
         return width+"X"+height;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(name);
+        parcel.writeString(path);
+        parcel.writeString(thumbnailUri);
+        parcel.writeString(description);
+        parcel.writeString(date);
+        parcel.writeString(contentType);
+        parcel.writeString(width);
+        parcel.writeString(height);
+        parcel.writeLong(size);
     }
 }
