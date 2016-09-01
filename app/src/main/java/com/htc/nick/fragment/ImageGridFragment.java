@@ -190,7 +190,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         Intent i = new Intent(getContext(), GalleryActivity.class);
-        i.putExtra("position", position);
+        i.putExtra("position", position-3);
         i.putStringArrayListExtra(GalleryActivity.EXTRA_NAME, photoList);
         getContext().startActivity(i);
 
@@ -292,7 +292,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             // setting a placeholder image while the background thread runs
            mImageFetcher.loadImage(mPhooItem.get(pos- mNumColums).getThumbnailUri()
                    , imageview);
-            Log.d(TAG,mPhooItem.get(pos- mNumColums).getThumbnailUri());
+//            Log.d(TAG,mPhooItem.get(pos- mNumColums).getThumbnailUri());
 //            mImageFetcher.loadImage(Images.imageThumbUrls[pos- mNumColums], imageview);
             return imageview;
 

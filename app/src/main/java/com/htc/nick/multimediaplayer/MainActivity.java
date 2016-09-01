@@ -29,6 +29,7 @@ import com.htc.nick.Page.SlideShowPlayer.SlideShowPlayerActivity;
 import com.htc.nick.fragment.ImageGridFragment;
 import com.htc.nick.fragment.SongFragment;
 import com.htc.nick.fragment.VideoGridFragment;
+import com.htc.nick.logger.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_music);
-
+        Log.d("MainActivity","thread id="+String.valueOf(Thread.currentThread().getId()));
        init();
     }
 
@@ -150,20 +151,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
 
-            case Constants.WRITE_EXTERNAL_STORAGE:
-                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                   // init();
-                }
-                break;
-
-            default:
-                break;
-        }
-    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();

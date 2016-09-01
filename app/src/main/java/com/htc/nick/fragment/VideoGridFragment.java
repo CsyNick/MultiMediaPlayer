@@ -195,9 +195,9 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         Intent intent = new Intent( getContext() , VideoPlayerActivity_.class);
-        intent.putExtra(TITLE,videoManager.getVideoList().get(position).getFileName());
-        intent.putExtra	(URL, videoManager.getVideoList().get(position).getPath());
-        intent.putExtra(THUMBNAILS, videoManager.getVideoList().get(position).getThumbnail());
+        intent.putExtra(TITLE,videoManager.getVideoList().get(position-3).getFileName());
+        intent.putExtra	(URL, videoManager.getVideoList().get(position-3).getPath());
+        intent.putExtra(THUMBNAILS, videoManager.getVideoList().get(position-3).getThumbnail());
         startActivity(intent);
 
     }

@@ -95,40 +95,48 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
         songManager = new SongManager(this);
 
 
-        mOnAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+                  runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mOnAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
 
-            @Override
-            public void onAudioFocusChange(int focusChange) {
-                switch (focusChange) {
-                    case AudioManager.AUDIOFOCUS_GAIN:
-                        Log.i(TAG, "AUDIOFOCUS_GAIN");
-                        play();
-                        break;
-                    case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
-                        Log.i(TAG, "AUDIOFOCUS_GAIN_TRANSIENT");
-                        break;
-                    case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
-                        Log.i(TAG, "AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK");
-                        break;
-                    case AudioManager.AUDIOFOCUS_LOSS:
-                        Log.e(TAG, "AUDIOFOCUS_LOSS");
-                        pause();
-                        break;
-                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                        Log.e(TAG, "AUDIOFOCUS_LOSS_TRANSIENT");
-                        pause();
-                        break;
-                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                        Log.e(TAG, "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
-                        break;
-                    case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
-                        Log.e(TAG, "AUDIOFOCUS_REQUEST_FAILED");
-                        break;
-                    default:
-                        //
-                }
-            }
-        };
+                                            @Override
+                                            public void onAudioFocusChange(int focusChange) {
+                                                switch (focusChange) {
+                                                    case AudioManager.AUDIOFOCUS_GAIN:
+                                                        Log.i(TAG, "AUDIOFOCUS_GAIN");
+                                                        play();
+                                                        break;
+                                                    case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
+                                                        Log.i(TAG, "AUDIOFOCUS_GAIN_TRANSIENT");
+                                                        break;
+                                                    case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
+                                                        Log.i(TAG, "AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK");
+                                                        break;
+                                                    case AudioManager.AUDIOFOCUS_LOSS:
+                                                        Log.e(TAG, "AUDIOFOCUS_LOSS");
+                                                        pause();
+                                                        break;
+                                                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                                                        Log.e(TAG, "AUDIOFOCUS_LOSS_TRANSIENT");
+                                                        pause();
+                                                        break;
+                                                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                                                        Log.e(TAG, "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
+                                                        break;
+                                                    case AudioManager.AUDIOFOCUS_REQUEST_FAILED:
+                                                        Log.e(TAG, "AUDIOFOCUS_REQUEST_FAILED");
+                                                        break;
+                                                    default:
+                                                        //
+                                                }
+                                            }
+                                        };
+                                    }
+                                }
+                  );
+
+
     }
 
     @AfterViews
@@ -360,6 +368,8 @@ public class MusicPlayerActivity extends BaseActivity<MusicPlayerView, MusicPlay
         super.onDestroy();
         mHandler.removeCallbacks(mUpdateTimeTask);
         mp.release();
+        abandonAudioFocus();
+
     }
 
     private boolean requestAudioFocus() {
