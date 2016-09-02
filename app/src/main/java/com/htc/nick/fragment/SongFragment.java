@@ -47,11 +47,8 @@ public class SongFragment extends Fragment {
         songsListPath = new ArrayList<>();
 
         int permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
 
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
-        } else {
             mSongList = songManager.getSongList();
             if (songsListData.size()==0) {
                 for (int i = 0; i < mSongList.size(); i++) {

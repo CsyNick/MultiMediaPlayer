@@ -2,6 +2,7 @@ package com.htc.nick.multimediaplayer;
 
 
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -9,10 +10,12 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -62,8 +65,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_music);
-        Log.d("MainActivity","thread id="+String.valueOf(Thread.currentThread().getId()));
-       init();
+
+            init();
+
     }
 
     private void init() {
@@ -89,18 +93,59 @@ public class MainActivity extends AppCompatActivity implements MainView {
             mTabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#B5ADB6"));
         }
 
-        mViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
-            @Override
-            public Fragment getItem(int position) {
-                return mFragmentList.get(position);
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
+        } else {
+            mViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
+                @Override
+                public Fragment getItem(int position) {
+                    return mFragmentList.get(position);
+                }
+
+                @Override
+                public int getCount() {
+                    return mFragmentList.size();
+                }
+            });
+        }
+
+
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case Constants.WRITE_EXTERNAL_STORAGE: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
+                        @Override
+                        public Fragment getItem(int position) {
+                            return mFragmentList.get(position);
+                        }
+
+                        @Override
+                        public int getCount() {
+                            return mFragmentList.size();
+                        }
+                    });
+                    // permission was granted, yay! do the
+                    // calendar task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
             }
 
-            @Override
-            public int getCount() {
-                return mFragmentList.size();
-            }
-        });
-
+            // other 'switch' lines to check for other
+            // permissions this app might request
+        }
     }
     private void setupViewPager() {
 

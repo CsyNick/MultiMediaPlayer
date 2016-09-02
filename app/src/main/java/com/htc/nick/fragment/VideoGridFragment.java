@@ -93,11 +93,9 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
 
 
         int permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
 
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
-        } else {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -155,6 +153,7 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
                     @TargetApi(VERSION_CODES.JELLY_BEAN)
                     @Override
                     public void onGlobalLayout() {
+                        if (mAdapter != null){
                         if (mAdapter.getmNumColums() == 0) {
                             final int numColumns = (int) Math.floor(
                                     mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
@@ -173,6 +172,7 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
                             }
                         }
                     }
+                    }
                 });
 
         return v;
@@ -183,6 +183,7 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
         super.onResume();
         Log.d("NickFragment","onResume-"+TAG);
         mImageFetcher.setExitTasksEarly(false);
+        if(mAdapter != null)
         mAdapter.notifyDataSetChanged();
     }
 
