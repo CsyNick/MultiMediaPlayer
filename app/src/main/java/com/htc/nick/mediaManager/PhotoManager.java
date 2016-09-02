@@ -19,11 +19,17 @@ public class PhotoManager {
 
     private ArrayList<PhotoItem> photoList = new ArrayList<>();
     private Context context;
-
+    private static PhotoManager instance;
     public PhotoManager(Context context) {
         this.context = context;
     }
 
+    public static PhotoManager getInstance(Context context) {
+        if (instance == null) {
+            instance = new PhotoManager(context);
+        }
+        return instance;
+    }
     public ArrayList<PhotoItem> getPhotoList() {
         Cursor cursor = context.getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,

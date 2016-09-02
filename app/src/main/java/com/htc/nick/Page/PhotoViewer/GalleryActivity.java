@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -39,9 +43,11 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class GalleryActivity extends AppCompatActivity {
     public static final String TAG = "GalleryActivity";
     public static final String EXTRA_NAME = "images";
+    public static final String IMAGES_PATH = "images_path";
 
     private GalleryPagerAdapter _adapter;
     private ArrayList<PhotoItem> _images;
+    private ArrayList<String> _imagesp_path;
     @InjectView(R.id.pager)
     ViewPager _pager;
     @InjectView(R.id.btn_close)
@@ -53,6 +59,7 @@ public class GalleryActivity extends AppCompatActivity {
     private boolean isOpenSystemUI = false;
     View decorView;
 
+    private PhotoManager photoManager = null;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +68,8 @@ public class GalleryActivity extends AppCompatActivity {
          decorView = getWindow().getDecorView();
         int position =  getIntent().getIntExtra("position", 0);
          Log.d(TAG,position+"..");
-        _images =  getIntent().getParcelableArrayListExtra(EXTRA_NAME);
-        Assert.assertNotNull(_images);
+        _imagesp_path =  getIntent().getStringArrayListExtra(IMAGES_PATH);
+        Assert.assertNotNull(_imagesp_path);
         hideSystemUI();
         _adapter = new GalleryPagerAdapter(this);
         _pager.setAdapter(_adapter);
@@ -88,6 +95,19 @@ public class GalleryActivity extends AppCompatActivity {
                 }
             }
         });
+
+        photoManager = PhotoManager.getInstance(this);
+        HandlerThread thread = new HandlerThread("myThread");
+        thread.start(); // thread 要start後，才能取得looper
+        Handler handler = new Handler(thread.getLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                // 耗時的工作可以在這裡做
+                _images =  photoManager.getPhotoList();
+            }
+        };
+        handler.sendEmptyMessage(0); // handler發送的訊息，會觸發handler.handleMessage()。
+
     }
 
     class GalleryPagerAdapter extends PagerAdapter {
@@ -102,7 +122,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return _images.size();
+            return _imagesp_path.size();
         }
 
         @Override
@@ -139,7 +159,7 @@ public class GalleryActivity extends AppCompatActivity {
                 }
             });
             Glide.with(_context)
-                    .load(_images.get(position).getThumbnailUri())
+                    .load(_imagesp_path.get(position))
                     .asBitmap()
                     .override(720, 240)
                     .into(new SimpleTarget<Bitmap>() {
@@ -181,5 +201,12 @@ public class GalleryActivity extends AppCompatActivity {
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
     }
 }

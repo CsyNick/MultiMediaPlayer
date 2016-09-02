@@ -41,6 +41,7 @@ public class SongFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        Log.d("NickFragment","onCreate-"+TAG);
         songManager = new SongManager(getContext());
         songsListData = new ArrayList<>();
         songsListPath = new ArrayList<>();

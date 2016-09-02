@@ -21,6 +21,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.BuildConfig;
@@ -38,6 +39,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 
 import com.htc.nick.Base.Constants;
 import com.htc.nick.BitmapDisplay.util.ImageCache;
@@ -76,7 +78,8 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setRetainInstance(true);
+        Log.d("NickFragment","onCreate-"+TAG);
         photoManager = new PhotoManager(getContext());
         mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
@@ -112,7 +115,32 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
         mImageFetcher.setLoadingImage(R.mipmap.empty_pokemon);
         mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
     }
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            //相当于Fragment的onResume
+        } else {
+            //相当于Fragment的onPause
+        }
+    }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        populateViewForOrientation(inflater, (ViewGroup) getView());
+    }
+    private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
+        viewGroup.removeAllViewsInLayout();
+        View subview = inflater.inflate(R.layout.image_grid_fragment, viewGroup);
+
+        // Find your buttons in subview, set up onclicks, set up callbacks to your parent fragment or activity here.
+
+        // You can create ViewHolder or separate method for that.
+        // example of accessing views: TextView textViewExample = (TextView) view.findViewById(R.id.text_view_example);
+        // textViewExample.setText("example");
+    }
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -145,24 +173,25 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
         // of each view so we get nice square thumbnails.
         mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @TargetApi(VERSION_CODES.JELLY_BEAN)
                     @Override
                     public void onGlobalLayout() {
-                        if (mAdapter.getmNumColums() == 0) {
-                            final int numColumns = (int) Math.floor(
-                                    mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
-                            if (numColumns > 0) {
-                                final int columnWidth =
-                                        (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
-                                mAdapter.setmNumColums(numColumns);
-                                mAdapter.setmItemHeight(columnWidth);
-                                if (BuildConfig.DEBUG) {
-                                    Log.d(TAG, "onCreateView - numColumns set to " + numColumns);
+                        if (mAdapter != null) {
+                            if (mAdapter.getmNumColums() == 0) {
+                                final int numColumns = (int) Math.floor(
+                                        mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+                                if (numColumns > 0) {
+                                    final int columnWidth =
+                                            (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
+                                    mAdapter.setmNumColums(numColumns);
+                                    mAdapter.setmItemHeight(columnWidth);
+                                    if (BuildConfig.DEBUG) {
+                                        Log.d(TAG, "onCreateView - numColumns set to " + numColumns);
+                                    }
+
+                                    mGridView.getViewTreeObserver()
+                                            .removeGlobalOnLayoutListener(this);
+
                                 }
-
-                                mGridView.getViewTreeObserver()
-                                        .removeGlobalOnLayoutListener(this);
-
                             }
                         }
                     }
@@ -193,13 +222,11 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
         mImageFetcher.closeCache();
     }
 
-    @TargetApi(VERSION_CODES.JELLY_BEAN)
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         Intent i = new Intent(getContext(), GalleryActivity.class);
-        i.putExtra("position", position-3);
-        i.putStringArrayListExtra(GalleryActivity.EXTRA_NAME, photoList);
-        i.putParcelableArrayListExtra(GalleryActivity.EXTRA_NAME,photoManager.getPhotoList());
+        i.putExtra("position", position-mAdapter.getmNumColums());
+        i.putStringArrayListExtra(GalleryActivity.IMAGES_PATH, photoList);
         getContext().startActivity(i);
 
     }
@@ -213,7 +240,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
         private final Context mContext;
         private int mItemHeight = 0;
         private int mNumColums = 0;
-        private int mActionBarHeight = 0;
+
         private GridView.LayoutParams mImageViewLayoutParams;
         private ArrayList<PhotoItem> mPhooItem;
 
@@ -222,13 +249,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             this.mContext = context;
             mImageViewLayoutParams = new GridView.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            //Calculate ActionBar Height
-            TypedValue tv = new TypedValue();
-            if (context.getTheme().resolveAttribute(
-                    android.R.attr.actionBarSize, tv, true)) {
-                mActionBarHeight = TypedValue.complexToDimensionPixelSize(
-                        tv.data, context.getResources().getDisplayMetrics());
-            }
+
 
             this.mPhooItem = photoItems;
 
@@ -300,8 +321,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
             // setting a placeholder image while the background thread runs
            mImageFetcher.loadImage(mPhooItem.get(pos- mNumColums).getThumbnailUri()
                    , imageview);
-//            Log.d(TAG,mPhooItem.get(pos- mNumColums).getThumbnailUri());
-//            mImageFetcher.loadImage(Images.imageThumbUrls[pos- mNumColums], imageview);
+
             return imageview;
 
         }

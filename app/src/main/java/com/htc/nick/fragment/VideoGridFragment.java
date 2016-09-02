@@ -85,7 +85,8 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setRetainInstance(true);
+        Log.d("NickFragment","onCreate-"+TAG);
         videoManager = new VideoManager(getContext());
         mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
@@ -100,6 +101,7 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    if (mAdapter == null)
                     mAdapter = new ImageAdapter(getActivity(), videoManager.getVideoList());
                 }
             });
