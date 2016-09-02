@@ -45,7 +45,7 @@ public class PhotoManager {
                         , MediaStore.Images.Media.WIDTH
                         , MediaStore.Images.Media.HEIGHT
                         , MediaStore.Images.Media.TITLE}, null, null,
-                "LOWER(" + MediaStore.Images.Media.TITLE + ") ASC");
+                "LOWER(" + MediaStore.Images.Media.DATE_ADDED + ") ASC");
 
         if (cursor.moveToFirst()) {
             do {

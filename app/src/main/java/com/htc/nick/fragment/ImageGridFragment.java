@@ -86,11 +86,9 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
 
 
         int permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
 
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Constants.WRITE_EXTERNAL_STORAGE);
-        } else {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -115,15 +113,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
         mImageFetcher.setLoadingImage(R.mipmap.empty_pokemon);
         mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
     }
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            //相当于Fragment的onResume
-        } else {
-            //相当于Fragment的onPause
-        }
-    }
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -205,6 +195,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
         super.onResume();
         Log.d("NickFragment","onResume-"+TAG);
         mImageFetcher.setExitTasksEarly(false);
+        if(mAdapter!=null)
         mAdapter.notifyDataSetChanged();
     }
 

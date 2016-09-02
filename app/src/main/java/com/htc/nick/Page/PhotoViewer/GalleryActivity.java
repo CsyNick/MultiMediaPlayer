@@ -158,6 +158,7 @@ public class GalleryActivity extends AppCompatActivity {
                     }
                 }
             });
+            imageView.setMaxScale(10f);
             Glide.with(_context)
                     .load(_imagesp_path.get(position))
                     .asBitmap()
