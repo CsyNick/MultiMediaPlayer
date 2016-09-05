@@ -65,9 +65,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_music);
-
             init();
-
     }
 
     private void init() {
@@ -103,7 +101,22 @@ public class MainActivity extends AppCompatActivity implements MainView {
             mViewPager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
                 @Override
                 public Fragment getItem(int position) {
-                    return mFragmentList.get(position);
+                    Fragment fragment;
+                    switch (position) {
+                        case 0:
+                            fragment = SongFragment.getInstance();
+                            break;
+                        case 1:
+                            fragment = VideoGridFragment.getInstance();
+                            break;
+                        case 2:
+                            fragment = ImageGridFragment.getInstance();
+                            break;
+                        default:
+                            fragment = null;
+                            break;
+                    }
+                    return fragment;
                 }
 
                 @Override

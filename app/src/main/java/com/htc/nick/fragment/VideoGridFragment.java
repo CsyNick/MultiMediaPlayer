@@ -81,6 +81,11 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
      */
     public VideoGridFragment() {
     }
+    private static VideoGridFragment instance = new VideoGridFragment();
+
+    public static VideoGridFragment getInstance () {
+        return instance;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -174,7 +179,10 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
                     }
                     }
                 });
-
+        ViewGroup parent = (ViewGroup) v.getParent();
+        if (parent != null) {
+            parent.removeView(v);
+        }
         return v;
     }
 

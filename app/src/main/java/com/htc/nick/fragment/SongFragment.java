@@ -37,6 +37,18 @@ public class SongFragment extends Fragment {
     private ListView audioListView;
     private SongManager songManager;
     private ArrayAdapter<String> mAdapter;
+
+    /**
+     * Empty constructor as per the Fragment documentation
+     */
+    public SongFragment() {
+    }
+    private static SongFragment instance = new SongFragment();
+
+    public static SongFragment getInstance () {
+        return instance;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

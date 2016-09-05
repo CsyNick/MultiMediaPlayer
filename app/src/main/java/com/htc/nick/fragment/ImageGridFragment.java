@@ -74,6 +74,12 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
      */
     public ImageGridFragment() {
     }
+    private static ImageGridFragment instance = new ImageGridFragment();
+
+        public static ImageGridFragment getInstance () {
+            return instance;
+        }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -186,7 +192,10 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
                         }
                     }
                 });
-
+        ViewGroup parent = (ViewGroup) v.getParent();
+        if (parent != null) {
+            parent.removeView(v);
+        }
         return v;
     }
 
