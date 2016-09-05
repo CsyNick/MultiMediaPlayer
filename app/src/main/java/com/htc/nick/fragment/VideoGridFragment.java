@@ -21,6 +21,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.os.Build.VERSION_CODES;
@@ -32,10 +33,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -49,6 +52,7 @@ import com.htc.nick.BitmapDisplay.util.AsyncTask;
 import com.htc.nick.BitmapDisplay.util.ImageCache;
 import com.htc.nick.BitmapDisplay.util.ImageFetcher;
 import com.htc.nick.CustomView.RecyclingImageView;
+import com.htc.nick.Item.PhotoItem;
 import com.htc.nick.Item.VideoItem;
 import com.htc.nick.Page.VideoPlayer.VideoPlayerActivity_;
 import com.htc.nick.mediaManager.VideoManager;
@@ -97,21 +101,6 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
 
-        int permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (mAdapter == null)
-                    mAdapter = new ImageAdapter(getActivity(), videoManager.getVideoList());
-                }
-            });
-
-        }
-
-
         ImageCache.ImageCacheParams cacheParams =
                 new ImageCache.ImageCacheParams(getActivity(), IMAGE_CACHE_DIR);
 
@@ -129,7 +118,30 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
 
         final View v = inflater.inflate(R.layout.fragment_video, container, false);
         final GridView mGridView = (GridView) v.findViewById(R.id.videoGridView);
-        mGridView.setAdapter(mAdapter);
+        new Thread(new Runnable() {  // download是耗時的動作，在另外建立一個thread來執行，所以，下一行的run()，這在個thread.start()後，會在另一個thread(worker thread)執行
+            public void run() {
+                if (mAdapter == null)
+                    mAdapter = new ImageAdapter(getActivity(), videoManager.getVideoList());
+                mGridView.post(new Runnable() {  // -> 利用ui元件進行post，下面那行的run會執行在ui元件所使用的thread上(Main Thread)
+                    public void run() {
+                        int gridViewEntrySize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
+                        int gridViewSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
+                        WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+                        Display display = wm.getDefaultDisplay();
+
+                        int numColumns = (display.getWidth() - gridViewSpacing) / (gridViewEntrySize + gridViewSpacing);
+                        if (numColumns > 0) {
+                            final int columnWidth =
+                                    (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
+                            Log.d(TAG, numColumns + "-numColumns columnWidth-" + columnWidth);
+                            mAdapter.setmNumColums(3);
+                            mAdapter.setmItemHeight(columnWidth);
+                        }
+                        mGridView.setAdapter(mAdapter);
+                    }
+                });
+            }
+        }).start();
         mGridView.setOnItemClickListener(this);
         mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -149,36 +161,6 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
             }
         });
 
-        // This listener is used to get the final width of the GridView and then calculate the
-        // number of columns and the width of each column. The width of each column is variable
-        // as the GridView has stretchMode=columnWidth. The column width is used to set the height
-        // of each view so we get nice square thumbnails.
-        mGridView.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @TargetApi(VERSION_CODES.JELLY_BEAN)
-                    @Override
-                    public void onGlobalLayout() {
-                        if (mAdapter != null){
-                        if (mAdapter.getmNumColums() == 0) {
-                            final int numColumns = (int) Math.floor(
-                                    mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));
-                            if (numColumns > 0) {
-                                final int columnWidth =
-                                        (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
-                                mAdapter.setmNumColums(numColumns);
-                                mAdapter.setmItemHeight(columnWidth);
-                                if (BuildConfig.DEBUG) {
-                                    Log.d(TAG, "onCreateView - numColumns set to " + numColumns);
-                                }
-
-                                mGridView.getViewTreeObserver()
-                                        .removeGlobalOnLayoutListener(this);
-
-                            }
-                        }
-                    }
-                    }
-                });
         ViewGroup parent = (ViewGroup) v.getParent();
         if (parent != null) {
             parent.removeView(v);
@@ -220,7 +202,24 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
 
     }
 
+    //
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // This listener is used to get the final width of the GridView and then calculate the
+        // number of columns and the width of each column. The width of each column is variable
+        // as the GridView has stretchMode=columnWidth. The column width is used to set the height
+        // of each view so we get nice square thumbnails.
+        int gridViewEntrySize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
+        int gridViewSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
+        WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
 
+        int numColumns = (display.getWidth() - gridViewSpacing) / (gridViewEntrySize + gridViewSpacing);
+        if (numColumns > 0) {
+            mAdapter.setmNumColums(numColumns);
+        }
+    }
     /**
      * Created by nickchung on 2016/8/18.
      */
@@ -229,7 +228,7 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
         private final Context mContext;
         private int mItemHeight = 0;
         private int mNumColums = 0;
-        private int mActionBarHeight = 0;
+
         private GridView.LayoutParams mImageViewLayoutParams;
         private ArrayList<VideoItem> mVideoItems;
 
@@ -238,13 +237,6 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
             this.mContext = context;
             mImageViewLayoutParams = new GridView.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            //Calculate ActionBar Height
-            TypedValue tv = new TypedValue();
-            if (context.getTheme().resolveAttribute(
-                    android.R.attr.actionBarSize, tv, true)) {
-                mActionBarHeight = TypedValue.complexToDimensionPixelSize(
-                        tv.data, context.getResources().getDisplayMetrics());
-            }
 
             this.mVideoItems = videoItems;
 
@@ -257,7 +249,7 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
             if (getmNumColums() == 0) {
                 return 0;
             }
-            return mVideoItems.size();
+            return mVideoItems.size() + mNumColums;
         }
 
         @Override

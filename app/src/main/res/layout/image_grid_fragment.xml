@@ -23,6 +23,8 @@
     android:columnWidth="@dimen/image_thumbnail_size"
     android:horizontalSpacing="@dimen/image_thumbnail_spacing"
     android:numColumns="auto_fit"
+    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:scrollbars="vertical"
     android:stretchMode="columnWidth"
     android:verticalSpacing="@dimen/image_thumbnail_spacing" >
 

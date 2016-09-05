@@ -37,6 +37,7 @@ public class VideoManager {
                 videoList.add(videoItem);
             } while (cursor.moveToNext());
         }
+        cursor.close();
         return videoList;
     }
 

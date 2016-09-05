@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         setSupportActionBar(toolbar);
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mViewPager.setOffscreenPageLimit(3);
         mFragmentList = new ArrayList<>();
         mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
         mTabHost.getTabWidget().setDividerDrawable(null);
