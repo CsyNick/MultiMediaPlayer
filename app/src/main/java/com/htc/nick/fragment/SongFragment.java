@@ -109,12 +109,6 @@ public class SongFragment extends Fragment {
 
     }
 
-    private void init(){
-
-
-
-
-    }
-
+    
 
 }

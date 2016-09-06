@@ -120,8 +120,11 @@ public class VideoGridFragment extends Fragment implements AdapterView.OnItemCli
         final GridView mGridView = (GridView) v.findViewById(R.id.videoGridView);
         new Thread(new Runnable() {  // download是耗時的動作，在另外建立一個thread來執行，所以，下一行的run()，這在個thread.start()後，會在另一個thread(worker thread)執行
             public void run() {
-                if (mAdapter == null)
-                    mAdapter = new ImageAdapter(getActivity(), videoManager.getVideoList());
+                int permissionCheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                    if (mAdapter == null)
+                        mAdapter = new ImageAdapter(getActivity(), videoManager.getVideoList());
+                }
                 mGridView.post(new Runnable() {  // -> 利用ui元件進行post，下面那行的run會執行在ui元件所使用的thread上(Main Thread)
                     public void run() {
                         int gridViewEntrySize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
