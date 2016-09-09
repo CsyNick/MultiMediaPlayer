@@ -209,20 +209,8 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
         getContext().startActivity(i);
 
     }
-//    private void refreshGridView() {
-//
-//
-//       int gridViewEntrySize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
-//       int gridViewSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
-//        WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
-//        Display display = wm.getDefaultDisplay();
-//
-//        int numColumns = (display.getWidth() - gridViewSpacing) / (gridViewEntrySize + gridViewSpacing);
-//
-//        mGridView.setNumColumns(numColumns);
-//        Log.d(TAG,numColumns +"numColumns" );
-//    }
-//
+
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
